@@ -26,6 +26,9 @@ services:
       - db
     ports:
       - "$API_PORT:3000"
+    # デバッグ用
+    tty: true
+    stdin_open: true
 
   front:
     build:
