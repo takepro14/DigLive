@@ -1,6 +1,6 @@
 [submodule "api"]
   path = api
-  url = https://github.com/takepro14/underwater_api
+  url = https://github.com/takepro14/mens-up-api
 [submodule "front"]
   path = front
-  url = https://github.com/takepro14/underwater_front
+  url = https://github.com/takepro14/mens-up-front
