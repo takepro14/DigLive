@@ -1,2 +1,12 @@
 /.env
 /.DS_store
+
+# terraform
+.envrc
+.terraform.lock.hcl
+.terraform-version
+terraform.tfstate
+terraform.tfstate.backup
+.terraform
+.tfvars
+crash.log
