@@ -1,6 +1,6 @@
 [
   {
-    "name": "example",
+    "name": "dig-live",
     "image": "nginx:latest",
     "essential": true,
     "portMappings": [

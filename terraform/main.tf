@@ -29,7 +29,7 @@
 # }
 
 # # EC2
-# resource "aws_instance" "example" {
+# resource "aws_instance" "dig-live" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = var.example_instance_type
 #   vpc_security_group_ids = [aws_security_group.example_ec2.id]
@@ -42,7 +42,7 @@
 # }
 
 # output "example_instance_id" {
-#   value = aws_instance.example.public_dns
+#   value = aws_instance.dig-live.public_dns
 # }
 
 #==================================================
@@ -61,7 +61,7 @@
 #==================================================
 # 組み込み関数
 #==================================================
-# resource "aws_instance" "example" {
+# resource "aws_instance" "dig-live" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = "t3.micro"
 #   user_data = file("./user_data.sh")
@@ -97,7 +97,7 @@
 #   values = ["available"]
 # }
 
-# resource "aws_instance" "example" {
+# resource "aws_instance" "dig-live" {
 #   ami = data.aws_ami.recent_amazon_linux_2.image_id
 #   instance_type = "t3.micro"
 # }
@@ -105,14 +105,14 @@
 #==================================================
 # 出力値
 #==================================================
-# resource "aws_instance" "example" {
+# resource "aws_instance" "dig-live" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = "t3.micro"
 # }
 
 # # 作成されたインスタンスのIDが出力される
 # output "example_instance_id" {
-#   value = aws_instance.example.id
+#   value = aws_instance.dig-live.id
 # }
 
 
@@ -123,7 +123,7 @@
 #   default = "t3.micro"
 # }
 
-# resource "aws_instance" "example" {
+# resource "aws_instance" "dig-live" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = var.example_instance_type
 # }
@@ -135,7 +135,7 @@
 #   example_instance_type = "t3.micro"
 # }
 
-# resource "aws_instance" "example" {
+# resource "aws_instance" "dig-live" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = local.example_instance_type
 # }

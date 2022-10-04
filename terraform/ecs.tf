@@ -5,17 +5,17 @@
 # #==================================================
 # # クラスタ
 # #==================================================
-# resource "aws_ecs_cluster" "example" {
-#   name = "example"
+# resource "aws_ecs_cluster" "dig-live" {
+#   name = "dig-live"
 # }
 
 # #==================================================
 # # サービス
 # #==================================================
-# resource "aws_ecs_service" "example" {
-#   name = "example"
-#   cluster = aws_ecs_cluster.example.arn
-#   task_definition = aws_ecs_task_definition.example.arn
+# resource "aws_ecs_service" "dig-live" {
+#   name = "dig-live"
+#   cluster = aws_ecs_cluster.dig-live.arn
+#   task_definition = aws_ecs_task_definition.dig-live.arn
 #   # ECSサービスが維持するタスク数
 #   desired_count = 2
 #   launch_type = "FARGATE"
@@ -33,8 +33,8 @@
 #   }
 
 #   load_balancer {
-#     target_group_arn = aws_lb_target_group.example.arn
-#     container_name = "example"
+#     target_group_arn = aws_lb_target_group.dig-live.arn
+#     container_name = "dig-live"
 #     container_port = 80
 #   }
 
@@ -49,17 +49,17 @@
 # module "nginx_sg" {
 #   source = "./security_group"
 #   name = "nginx-sg"
-#   vpc_id = aws_vpc.example.id
+#   vpc_id = aws_vpc.dig-live.id
 #   port = 80
-#   cidr_blocks = [aws_vpc.example.cidr_block]
+#   cidr_blocks = [aws_vpc.dig-live.cidr_block]
 # }
 
 # #==================================================
 # # タスク定義
 # #==================================================
-# resource "aws_ecs_task_definition" "example" {
+# resource "aws_ecs_task_definition" "dig-live" {
 #   # タスク定義名: example:1, 2, 3, ...
-#   family = "example"
+#   family = "dig-live"
 #   cpu = "256"
 #   memory = "512"
 #   network_mode = "awsvpc"

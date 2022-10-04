@@ -1,10 +1,10 @@
 ####################################################################################################
 # Internet Gateway
 ####################################################################################################
-resource "aws_internet_gateway" "example" {
-  vpc_id = aws_vpc.example.id
+resource "aws_internet_gateway" "dig-live" {
+  vpc_id = aws_vpc.dig-live.id
 
   tags = {
-    Name = "example"
+    Name = "dig-live"
   }
 }
