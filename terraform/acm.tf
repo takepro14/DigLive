@@ -2,10 +2,11 @@
 # AWS Certificate Manager
 ####################################################################################################
 #==================================================
-# SSL証明書の定義
+# SSL証明書を作成
 #==================================================
 resource "aws_acm_certificate" "dig-live" {
   domain_name = aws_route53_record.dig-live_host-zone-record.name
+  subject_alternative_names = []
   validation_method = "DNS"
 
   lifecycle {
@@ -15,7 +16,7 @@ resource "aws_acm_certificate" "dig-live" {
 }
 
 #==================================================
-# SSL証明書の検証用レコード定義
+# SSL証明書の検証用レコードを作成
 #==================================================
 resource "aws_route53_record" "dig-live_validation-record" {
   name = tolist(aws_acm_certificate.dig-live.domain_validation_options)[0].resource_record_name
