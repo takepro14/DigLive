@@ -1,0 +1,131 @@
+version: 2.1
+
+# orbs:
+#   aws-ecr: circleci/aws-ecr@6.15.3
+#   aws-ecs: circleci/aws-ecs@2.1.0
+#   aws-cli: circleci/aws-cli@1.4.1
+
+jobs:
+  build:
+    machine:
+      image: circleci/classic:edge
+    steps:
+      - checkout
+      - run:
+          name: docker-compose build
+          command: docker-compose build
+  test:
+    machine:
+      image: circleci/classic:edge
+    steps:
+      - checkout
+      - run:
+          name: docker-compose up -d
+          command: docker-compose up -d
+      - run: sleep 10
+      # ----- バックエンド -----
+      - run:
+          name: docker-compose run api rails db:create RAILS_ENV=test
+          command: docker-compose run api rails db:create RAILS_ENV=test
+      - run:
+          name: docker-compose run api rails db:migrate RAILS_ENV=test
+          command: docker-compose run api rails db:migrate RAILS_ENV=test
+      - run:
+          # name: docker-compose run api bundle exec rspec spec
+          # command: docker-compose run api bundle exec rspec spec
+          # 暫定的に一部のテストのみ実施
+          name: docker-compose run api bundle exec rspec spec/models/user_spec.rb
+          command: docker-compose run api bundle exec rspec spec/models/user_spec.rb
+      # - run:
+      #     name: Rubocop
+      #     command:  docker-compose run api bundle exec rubocop
+      - run:
+          name: docker-compose run front yarn install
+          command: docker-compose run front yarn install
+      # ----- フロントエンド -----
+      - run:
+          name: docker-compose run front yarn test
+          command: docker-compose run front yarn test
+      # ----- 共通 -----
+      - run:
+          name: docker-compose down
+          command: docker-compose down
+
+# 順番を制御するworkflow
+workflows:
+  build_and_test_and_deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      # - aws-ecr/build-and-push-image:
+      #     name: 'build-and-push-backend'
+      #     account-url: AWS_ECR_ACCOUNT_URL
+      #     region: AWS_REGION
+      #     repo: 'code-craft-backend'
+      #     tag: "${CIRCLE_SHA1}"
+      #     path: './backend'
+      #     dockerfile: Dockerfile.prd
+      #     requires:
+      #       - test
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      # - aws-ecr/build-and-push-image:
+      #     name: 'build-and-push-frontend'
+      #     account-url: AWS_ECR_ACCOUNT_URL
+      #     region: AWS_REGION
+      #     repo: 'code-craft-frontend'
+      #     tag: "${CIRCLE_SHA1}"
+      #     path: './frontend'
+      #     dockerfile: Dockerfile.prd
+      #     requires:st
+      #       - test
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      # - aws-ecs/update-task-definition:
+      #     family: ${FAMILY_NAME_MIGRATE} # rails db:migrate用　タスク定義名
+      #     container-image-name-updates: 'container=backend-container,tag=${CIRCLE_SHA1}'
+      #     aws-region: AWS_REGION
+      #     requires:
+      #       - build-and-push-backend
+      #     filters:
+      #       branches:
+      #         only: master
+      # - aws-ecs/run-task:
+      #     cluster: ${CLUSTER_NAME}
+      #     task-definition: ${TASK_MIGRATE}
+      #     subnet-ids: "${SUBNET_PUBLIC_1A},${SUBNET_PUBLIC_1C}"
+      #     assign-public-ip: ENABLED
+      #     security-group-ids: "${MIGRATION_SECURITY_GROUP_ID}"
+      #     requires:
+      #       - aws-ecs/update-task-definition
+      #     filters:
+      #       branches:
+      #         only: master
+      # - aws-ecs/deploy-service-update:
+      #       family: ${FAMILY_NAME_BACKEND}
+      #       service-name: ${SERVICE_NAME_BACKEND}
+      #       cluster-name: ${CLUSTER_NAME}
+      #       container-image-name-updates: 'container=backend-container,tag=${CIRCLE_SHA1}'
+      #       requires:
+      #         - aws-ecs/run-task
+      #       filters:
+      #         branches:
+      #           only:
+      #             - master
+      # - aws-ecs/deploy-service-update:
+      #       family: ${FAMILY_NAME_FRONTEND}
+      #       service-name: ${SERVICE_NAME_FRONTEND}
+      #       cluster-name: ${CLUSTER_NAME}
+      #       container-image-name-updates: 'container=frontend-container,tag=${CIRCLE_SHA1}'
+      #       requires:
+      #         - build-and-push-frontend
+      #       filters:
+      #         branches:
+      #           only:
+      #             - master
