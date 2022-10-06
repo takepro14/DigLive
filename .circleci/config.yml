@@ -7,16 +7,14 @@ version: 2.1
 
 jobs:
   build:
-    machine:
-      image: circleci/classic:edge
+    machine: true
     steps:
       - checkout
       - run:
           name: docker-compose build
           command: docker-compose build
   test:
-    machine:
-      image: circleci/classic:edge
+    machine: true
     steps:
       - checkout
       - run:
