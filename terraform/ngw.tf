@@ -1,20 +1,27 @@
-####################################################################################################
+##################################################
 # NAT Gateway
-####################################################################################################
-# resource "aws_nat_gateway" "nat_gateway_0" {
-#   allocation_id = aws_eip.nat_gateway_0.id
-#   subnet_id = aws_subnet.public_0.id
-#   depends_on = [aws_internet_gateway.dig-live]
+##################################################
+
+#=================================================
+# Availability-Zone 1a
+#=================================================
+# resource "aws_nat_gateway" "diglive-ngw-public-1a" {
+#   allocation_id = aws_eip.diglive-eip-public-1a.id
+#   subnet_id = aws_subnet.diglive-sub-public-1a.id
+#   depends_on = [aws_internet_gateway.diglive-igw]
 #   tags = {
-#     Name = "nat_gateway_0"
+#     Name = "diglive-ngw-public-1a"
 #   }
 # }
 
-# resource "aws_nat_gateway" "nat_gateway_1" {
-#   allocation_id = aws_eip.nat_gateway_1.id
-#   subnet_id = aws_subnet.public_1.id
-#   depends_on = [aws_internet_gateway.dig-live]
+#=================================================
+# Availability-Zone 1c
+#=================================================
+# resource "aws_nat_gateway" "diglive-ngw-public-1c" {
+#   allocation_id = aws_eip.diglive-eip-public-1c.id
+#   subnet_id = aws_subnet.diglive-sub-public-1c.id
+#   depends_on = [aws_internet_gateway.diglive-igw]
 #   tags = {
-#     Name = "nat_gateway_1"
+#     Name = "diglive-ngw-public-1c"
 #   }
 # }

@@ -1,7 +1,7 @@
 [
   {
     "name": "dig-live",
-    "image": "nginx:latest",
+    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-dig-live:latest",
     "essential": true,
     "logConfiguration": {
       "logDriver": "awslogs",
@@ -14,7 +14,7 @@
     "portMappings": [
       {
         "protocol": "tcp",
-        "containerPort": 80
+        "containerPort": 3000
       }
     ]
   }

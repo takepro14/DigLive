@@ -1,6 +1,6 @@
-####################################################################################################
+##################################################
 # syntax
-####################################################################################################
+##################################################
 
 # curlコマンド
 # curl ec25425024794.apnortheast1.compute.amazonaws.com
@@ -29,7 +29,7 @@
 # }
 
 # # EC2
-# resource "aws_instance" "dig-live" {
+# resource "aws_instance" "diglive" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = var.example_instance_type
 #   vpc_security_group_ids = [aws_security_group.example_ec2.id]
@@ -42,12 +42,12 @@
 # }
 
 # output "example_instance_id" {
-#   value = aws_instance.dig-live.public_dns
+#   value = aws_instance.diglive.public_dns
 # }
 
-#==================================================
+#=================================================
 # モジュール
-#==================================================
+#=================================================
 # module "web_server" {
 #   source = "./http_server"
 #   instance_type = "t3.micro"
@@ -58,10 +58,10 @@
 # }
 
 
-#==================================================
+#=================================================
 # 組み込み関数
-#==================================================
-# resource "aws_instance" "dig-live" {
+#=================================================
+# resource "aws_instance" "diglive" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = "t3.micro"
 #   user_data = file("./user_data.sh")
@@ -71,16 +71,16 @@
 # yum install -y httpd
 # systemctl start httpd.service
 
-#==================================================
+#=================================================
 # プロバイダ
-#==================================================
+#=================================================
 # provider "aws" {
 #   region = "ap-northeast-1"
 # }
 
-#==================================================
+#=================================================
 # データソース
-#==================================================
+#=================================================
 # data "aws_ami" "recent_amazon_linux_2" {
 #   # 最新のAMIを取得
 #   most_recent = true
@@ -97,45 +97,45 @@
 #   values = ["available"]
 # }
 
-# resource "aws_instance" "dig-live" {
+# resource "aws_instance" "diglive" {
 #   ami = data.aws_ami.recent_amazon_linux_2.image_id
 #   instance_type = "t3.micro"
 # }
 
-#==================================================
+#=================================================
 # 出力値
-#==================================================
-# resource "aws_instance" "dig-live" {
+#=================================================
+# resource "aws_instance" "diglive" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = "t3.micro"
 # }
 
 # # 作成されたインスタンスのIDが出力される
 # output "example_instance_id" {
-#   value = aws_instance.dig-live.id
+#   value = aws_instance.diglive.id
 # }
 
 
-#==================================================
+#=================================================
 # 変数
-#==================================================
+#=================================================
 # variable "example_instance_type" {
 #   default = "t3.micro"
 # }
 
-# resource "aws_instance" "dig-live" {
+# resource "aws_instance" "diglive" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = var.example_instance_type
 # }
 
-#==================================================
+#=================================================
 # ローカル変数
-#==================================================
+#=================================================
 # locals {
 #   example_instance_type = "t3.micro"
 # }
 
-# resource "aws_instance" "dig-live" {
+# resource "aws_instance" "diglive" {
 #   ami = "ami-078296f82eb463377"
 #   instance_type = local.example_instance_type
 # }

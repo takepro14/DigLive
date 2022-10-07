@@ -1,19 +1,21 @@
-####################################################################################################
+##################################################
 # Application Load Balancer
-####################################################################################################
-#==================================================
+##################################################
+
+#=================================================
 # ロードバランサー
-#==================================================
-resource "aws_lb" "dig-live" {
-  name = "dig-live"
+#=================================================
+resource "aws_lb" "diglive-alb" {
+  name = "diglive-alb"
   load_balancer_type = "application"
   internal = false
   idle_timeout = 60
   # enable_deletion_protection = true
 
+  # マルチAZ化するため
   subnets = [
-    aws_subnet.public_0.id,
-    aws_subnet.public_1.id
+    aws_subnet.diglive-sub-public-1a.id,
+    aws_subnet.diglive-sub-public-1c.id
   ]
 
   access_logs {
@@ -29,14 +31,14 @@ resource "aws_lb" "dig-live" {
 }
 
 output "alb_dns_name" {
-  value = aws_lb.dig-live.dns_name
+  value = aws_lb.diglive-alb.dns_name
 }
 
-#==================================================
+#=================================================
 # HTTPリスナー
-#==================================================
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.dig-live.arn
+#=================================================
+resource "aws_lb_listener" "diglive-alb-listener-http" {
+  load_balancer_arn = aws_lb.diglive-alb.arn
   port = "80"
   protocol = "HTTP"
 
@@ -51,14 +53,14 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-#==================================================
+#=================================================
 # HTTPSリスナー
-#==================================================
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.dig-live.arn
+#=================================================
+resource "aws_lb_listener" "diglive-alb-listener-https" {
+  load_balancer_arn = aws_lb.diglive-alb.arn
   port = "443"
   protocol = "HTTPS"
-  certificate_arn = aws_acm_certificate.dig-live.arn
+  certificate_arn = aws_acm_certificate.diglive-acm-certificate.arn
   ssl_policy = "ELBSecurityPolicy-2016-08"
 
   default_action {
@@ -71,15 +73,15 @@ resource "aws_lb_listener" "https" {
     }
   }
   depends_on = [
-    aws_acm_certificate_validation.dig-live
+    aws_acm_certificate_validation.diglive
   ]
 }
 
-#==================================================
+#=================================================
 # HTTP to HTTPSリダイレクト
-#==================================================
-resource "aws_lb_listener" "redirect_http_to_https" {
-  load_balancer_arn = aws_lb.dig-live.arn
+#=================================================
+resource "aws_lb_listener" "diglive-alb-listener-redirect" {
+  load_balancer_arn = aws_lb.diglive-alb.arn
   port = "8080"
   protocol = "HTTP"
 
@@ -94,13 +96,13 @@ resource "aws_lb_listener" "redirect_http_to_https" {
   }
 }
 
-# #==================================================
+#=================================================
 # ターゲットグループ
-# #==================================================
-resource "aws_lb_target_group" "dig-live" {
-  name = "dig-live"
+#=================================================
+resource "aws_lb_target_group" "diglive-alb-tg" {
+  name = "diglive"
   target_type = "ip"
-  vpc_id = aws_vpc.dig-live.id
+  vpc_id = aws_vpc.diglive-vpc.id
   port = 80
   protocol = "HTTP"
   deregistration_delay = 300
@@ -117,21 +119,21 @@ resource "aws_lb_target_group" "dig-live" {
   }
 
   depends_on = [
-    aws_lb.dig-live
+    aws_lb.diglive-alb
   ]
 }
 
-#==================================================
+#=================================================
 # リスナールール
-#==================================================
-resource "aws_lb_listener_rule" "dig-live" {
-  listener_arn = aws_lb_listener.https.arn
+#=================================================
+resource "aws_lb_listener_rule" "diglive-alb-listener-rule" {
+  listener_arn = aws_lb_listener.diglive-alb-listener-https.arn
   priority = 100
 
   # フォワード先のターゲットグループ
   action {
     type = "forward"
-    target_group_arn = aws_lb_target_group.dig-live.arn
+    target_group_arn = aws_lb_target_group.diglive-alb-tg.arn
   }
 
   condition {
@@ -139,31 +141,4 @@ resource "aws_lb_listener_rule" "dig-live" {
       values = ["/*"]
     }
   }
-}
-
-#==================================================
-# セキュリティグループ
-#==================================================
-module "http_sg" {
-  source = "./security_group"
-  name = "http-sg"
-  vpc_id = aws_vpc.dig-live.id
-  port = 80
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-module "https_sg" {
-  source = "./security_group"
-  name = "https-sg"
-  vpc_id = aws_vpc.dig-live.id
-  port = 443
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
-module "https_redirect_sg" {
-  source = "./security_group"
-  name = "http-redirect-sg"
-  vpc_id = aws_vpc.dig-live.id
-  port = 8080
-  cidr_blocks = ["0.0.0.0/0"]
 }

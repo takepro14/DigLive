@@ -1,11 +1,12 @@
-####################################################################################################
+##################################################
 # AWS Certificate Manager
-####################################################################################################
-#==================================================
-# SSL証明書を作成
-#==================================================
-resource "aws_acm_certificate" "dig-live" {
-  domain_name = aws_route53_record.dig-live_host-zone-record.name
+##################################################
+
+#=================================================
+# SSL証明書
+#=================================================
+resource "aws_acm_certificate" "diglive-acm-certificate" {
+  domain_name = aws_route53_record.diglive-hostzone-record.name
   subject_alternative_names = []
   validation_method = "DNS"
 
@@ -15,22 +16,22 @@ resource "aws_acm_certificate" "dig-live" {
   }
 }
 
-#==================================================
-# SSL証明書の検証用レコードを作成
-#==================================================
-resource "aws_route53_record" "dig-live_validation-record" {
-  name = tolist(aws_acm_certificate.dig-live.domain_validation_options)[0].resource_record_name
-  type = tolist(aws_acm_certificate.dig-live.domain_validation_options)[0].resource_record_type
-  records = [tolist(aws_acm_certificate.dig-live.domain_validation_options)[0].resource_record_value]
-  zone_id = data.aws_route53_zone.dig-live.zone_id
+#=================================================
+# SSL証明書 検証レコード
+#=================================================
+resource "aws_route53_record" "diglive-acm-validation-record" {
+  name = tolist(aws_acm_certificate.diglive-acm-certificate.domain_validation_options)[0].resource_record_name
+  type = tolist(aws_acm_certificate.diglive-acm-certificate.domain_validation_options)[0].resource_record_type
+  records = [tolist(aws_acm_certificate.diglive-acm-certificate.domain_validation_options)[0].resource_record_value]
+  zone_id = data.aws_route53_zone.diglive-hostzone.zone_id
   ttl = 60
 }
 
-#==================================================
+#=================================================
 # SSL証明書の検証完了まで待機
-#==================================================
+#=================================================
 # リソースを作るわけではない
-resource "aws_acm_certificate_validation" "dig-live" {
-  certificate_arn = aws_acm_certificate.dig-live.arn
-  validation_record_fqdns = [aws_route53_record.dig-live_validation-record.fqdn]
+resource "aws_acm_certificate_validation" "diglive" {
+  certificate_arn = aws_acm_certificate.diglive-acm-certificate.arn
+  validation_record_fqdns = [aws_route53_record.diglive-acm-validation-record.fqdn]
 }
