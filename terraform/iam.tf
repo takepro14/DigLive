@@ -1,11 +1,6 @@
-##################################################
-# Identity and Access Management
-##################################################
-
-#=================================================
-# ECS
-#=================================================
-# タスク実行ロールの参照
+#==================================================
+# ECS タスク実行用ロール
+#==================================================
 data "aws_iam_policy" "ecs_task_execution_role_policy" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
@@ -29,19 +24,9 @@ module "ecs_task_execution_role" {
   policy = data.aws_iam_policy_document.ecs_task_execution.json
 }
 
-# #=================================================
-# # EC2
-# #=================================================
-# module "describe_regions_for_ec2" {
-#   source = "./iam_role"
-#   name = "describe-regions-for-ec2"
-#   identifier = "ec2.amazonaws.com"
-#   policy = data.aws_iam_policy_document.allow_describe_regions.json
-# }
-
-# #=================================================
-# # CloudWatchイベントIAMロール
-# #=================================================
+#==================================================
+# CloudWatch イベント用ロール
+#==================================================
 # module "ecs_events_role" {
 #   source = "./iam_role"
 #   name = "ecs-events"
@@ -52,3 +37,21 @@ module "ecs_task_execution_role" {
 # data "aws_iam_policy" "ecs_events_role_policy" {
 #   arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole"
 # }
+
+
+#==================================================
+# S3 オブジェクトput用ロール
+#==================================================
+data "aws_iam_policy_document" "diglive_log" {
+  statement {
+    effect = "Allow"
+    actions = ["s3:PutObject"]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.diglive_log.id}/*"]
+
+    principals {
+      type = "AWS"
+      # 東京リージョンのAWSアカウントID(ALBで利用)
+      identifiers = ["582318560864"]
+    }
+  }
+}

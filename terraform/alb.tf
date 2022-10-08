@@ -1,12 +1,8 @@
-##################################################
-# Application Load Balancer
-##################################################
-
-#=================================================
+#==================================================
 # ロードバランサー
-#=================================================
-resource "aws_lb" "diglive-alb" {
-  name = "diglive-alb"
+#==================================================
+resource "aws_lb" "diglive" {
+  name = "diglive"
   load_balancer_type = "application"
   internal = false
   idle_timeout = 60
@@ -14,31 +10,31 @@ resource "aws_lb" "diglive-alb" {
 
   # マルチAZ化するため
   subnets = [
-    aws_subnet.diglive-sub-public-1a.id,
-    aws_subnet.diglive-sub-public-1c.id
+    aws_subnet.diglive_public_1a.id,
+    aws_subnet.diglive_public_1c.id
   ]
 
   access_logs {
-    bucket = aws_s3_bucket.log.id
+    bucket = aws_s3_bucket.diglive_log.id
     enabled = true
   }
 
   security_groups = [
-    module.http_sg.security_group_id,
-    module.https_sg.security_group_id,
-    module.https_redirect_sg.security_group_id
+    module.diglive_sg_alb_http.security_group_id,
+    module.diglive_sg_alb_https.security_group_id,
+    module.diglive_sg_alb_redirect.security_group_id
   ]
 }
 
 output "alb_dns_name" {
-  value = aws_lb.diglive-alb.dns_name
+  value = aws_lb.diglive.dns_name
 }
 
-#=================================================
-# HTTPリスナー
-#=================================================
-resource "aws_lb_listener" "diglive-alb-listener-http" {
-  load_balancer_arn = aws_lb.diglive-alb.arn
+#==================================================
+# リスナー: HTTP
+#==================================================
+resource "aws_lb_listener" "diglive_http" {
+  load_balancer_arn = aws_lb.diglive.arn
   port = "80"
   protocol = "HTTP"
 
@@ -53,14 +49,14 @@ resource "aws_lb_listener" "diglive-alb-listener-http" {
   }
 }
 
-#=================================================
-# HTTPSリスナー
-#=================================================
-resource "aws_lb_listener" "diglive-alb-listener-https" {
-  load_balancer_arn = aws_lb.diglive-alb.arn
+#==================================================
+# リスナー: HTTPS
+#==================================================
+resource "aws_lb_listener" "diglive_https" {
+  load_balancer_arn = aws_lb.diglive.arn
   port = "443"
   protocol = "HTTPS"
-  certificate_arn = aws_acm_certificate.diglive-acm-certificate.arn
+  certificate_arn = aws_acm_certificate.diglive.arn
   ssl_policy = "ELBSecurityPolicy-2016-08"
 
   default_action {
@@ -77,11 +73,11 @@ resource "aws_lb_listener" "diglive-alb-listener-https" {
   ]
 }
 
-#=================================================
-# HTTP to HTTPSリダイレクト
-#=================================================
-resource "aws_lb_listener" "diglive-alb-listener-redirect" {
-  load_balancer_arn = aws_lb.diglive-alb.arn
+#==================================================
+# リスナー: リダイレクト(HTTP to HTTPS)
+#==================================================
+resource "aws_lb_listener" "diglive_redirect" {
+  load_balancer_arn = aws_lb.diglive.arn
   port = "8080"
   protocol = "HTTP"
 
@@ -96,13 +92,13 @@ resource "aws_lb_listener" "diglive-alb-listener-redirect" {
   }
 }
 
-#=================================================
+#==================================================
 # ターゲットグループ
-#=================================================
+#==================================================
 resource "aws_lb_target_group" "diglive-alb-tg" {
   name = "diglive"
   target_type = "ip"
-  vpc_id = aws_vpc.diglive-vpc.id
+  vpc_id = aws_vpc.diglive.id
   port = 80
   protocol = "HTTP"
   deregistration_delay = 300
@@ -119,15 +115,15 @@ resource "aws_lb_target_group" "diglive-alb-tg" {
   }
 
   depends_on = [
-    aws_lb.diglive-alb
+    aws_lb.diglive
   ]
 }
 
-#=================================================
+#==================================================
 # リスナールール
-#=================================================
+#==================================================
 resource "aws_lb_listener_rule" "diglive-alb-listener-rule" {
-  listener_arn = aws_lb_listener.diglive-alb-listener-https.arn
+  listener_arn = aws_lb_listener.diglive_https.arn
   priority = 100
 
   # フォワード先のターゲットグループ

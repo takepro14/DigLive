@@ -1,19 +1,15 @@
-##################################################
-# Elastic Container Service
-##################################################
-
-#=================================================
-# クラスタ
-#=================================================
-resource "aws_ecs_cluster" "diglive-ecs-cluster" {
-  name = "diglive-ecs-cluster"
+#==================================================
+# ECSクラスター
+#==================================================
+resource "aws_ecs_cluster" "diglive" {
+  name = "diglive"
 }
 
-#=================================================
-# タスク定義
-#=================================================
-resource "aws_ecs_task_definition" "diglive-ecs-task-def" {
-  family = "diglive"
+#==================================================
+# ECSタスク定義
+#==================================================
+resource "aws_ecs_task_definition" "diglive_api" {
+  family = "diglive-api"
   cpu = "256"
   memory = "512"
   network_mode = "awsvpc"
@@ -23,7 +19,19 @@ resource "aws_ecs_task_definition" "diglive-ecs-task-def" {
   execution_role_arn = module.ecs_task_execution_role.iam_role_arn
 }
 
-# # バッチ用
+# Front
+# resource "aws_ecs_task_definition" "diglive_front" {
+#   family = "diglive-front"
+#   cpu = "256"
+#   memory = "512"
+#   network_mode = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   container_definitions = file("./container_definitions.json")
+#   # Dockerコンテナのロギング
+#   execution_role_arn = module.ecs_task_execution_role.iam_role_arn
+# }
+
+# Batch
 # resource "aws_ecs_task_definition" "diglive_batch" {
 #   family = "diglive-batch"
 #   cpu = "256"
@@ -35,14 +43,13 @@ resource "aws_ecs_task_definition" "diglive-ecs-task-def" {
 #   execution_role_arn = module.ecs_task_execution_role.iam_role_arn
 # }
 
-#=================================================
-# サービス
-#=================================================
-resource "aws_ecs_service" "diglive-ecs-service" {
-  name = "diglive-ecs-service"
-  cluster = aws_ecs_cluster.diglive-ecs-cluster.arn
-  task_definition = aws_ecs_task_definition.diglive-ecs-task-def.arn
-  # ECSサービスが維持するタスク数
+#==================================================
+# ECSサービス
+#==================================================
+resource "aws_ecs_service" "diglive" {
+  name = "diglive"
+  cluster = aws_ecs_cluster.diglive.arn
+  task_definition = aws_ecs_task_definition.diglive_api.arn
   desired_count = 2
   launch_type = "FARGATE"
   platform_version = "1.3.0"
@@ -50,11 +57,11 @@ resource "aws_ecs_service" "diglive-ecs-service" {
 
   network_configuration {
     assign_public_ip = false
-    security_groups = [module.nginx_sg.security_group_id]
+    security_groups = [module.diglive_sg_ecs_nginx.security_group_id]
 
     subnets = [
-      aws_subnet.diglive-sub-private-1a.id,
-      aws_subnet.diglive-sub-private-1c.id
+      aws_subnet.diglive_private_1a.id,
+      aws_subnet.diglive_private_1c.id
     ]
   }
 
@@ -69,5 +76,5 @@ resource "aws_ecs_service" "diglive-ecs-service" {
     ignore_changes = [task_definition]
   }
 
-  depends_on = [aws_lb_listener.diglive-alb-listener-http]
+  depends_on = [aws_lb_listener.diglive_http]
 }

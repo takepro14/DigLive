@@ -1,52 +1,48 @@
-##################################################
-# Security Group
-##################################################
-
-#=================================================
-# ALB
-#=================================================
-module "http_sg" {
+#==================================================
+# ALB用
+#==================================================
+module "diglive_sg_alb_http" {
   source = "./security_group"
-  name = "http-sg"
-  vpc_id = aws_vpc.diglive-vpc.id
+  name = "diglive-sg-alb-http"
+  vpc_id = aws_vpc.diglive.id
   port = 80
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-module "https_sg" {
+module "diglive_sg_alb_https" {
   source = "./security_group"
-  name = "https-sg"
-  vpc_id = aws_vpc.diglive-vpc.id
+  name = "diglive-sg-alb-https"
+  vpc_id = aws_vpc.diglive.id
   port = 443
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-module "https_redirect_sg" {
+module "diglive_sg_alb_redirect" {
   source = "./security_group"
-  name = "http-redirect-sg"
-  vpc_id = aws_vpc.diglive-vpc.id
+  name = "diglive-sg-alb-redirect"
+  vpc_id = aws_vpc.diglive.id
   port = 8080
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-#=================================================
-# ECS
-#=================================================
-module "nginx_sg" {
+#==================================================
+# ECS用
+#==================================================
+module "diglive_sg_ecs_nginx" {
   source = "./security_group"
-  name = "nginx-sg"
-  vpc_id = aws_vpc.diglive-vpc.id
+  name = "diglive-sg-ecs-nginx"
+  vpc_id = aws_vpc.diglive.id
   port = 80
-  cidr_blocks = [aws_vpc.diglive-vpc.cidr_block]
+  cidr_blocks = [aws_vpc.diglive.cidr_block]
 }
 
-#=================================================
-# RDS
-#=================================================
-module "mysql_sg" {
+#==================================================
+# RDS用
+#==================================================
+module "diglive_sg_rds_mysql" {
   source = "./security_group"
-  name = "mysql-sg"
-  vpc_id = aws_vpc.diglive-vpc.id
+  name = "diglive-sg-rds-mysql"
+  vpc_id = aws_vpc.diglive.id
   port = 3306
-  cidr_blocks = [aws_vpc.diglive-vpc.cidr_block]
+  cidr_blocks = [aws_vpc.diglive.cidr_block]
 }

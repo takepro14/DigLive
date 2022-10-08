@@ -1,19 +1,12 @@
-##################################################
-# Elastic IP
-##################################################
-
-#=================================================
-# Availability-Zone 1a
-#=================================================
-# resource "aws_eip" "diglive-eip-public-1a" {
+#==================================================
+# EIP
+#==================================================
+# resource "aws_eip" "diglive_public_1a" {
 #   vpc = true
-#   depends_on = [aws_internet_gateway.diglive-igw]
+#   depends_on = [aws_internet_gateway.diglive]
 # }
 
-#=================================================
-# Availability-Zone 1c
-#=================================================
-# resource "aws_eip" "diglive-eip-public-1c" {
+# resource "aws_eip" "diglive_public_1c" {
 #   vpc = true
-#   depends_on = [aws_internet_gateway.diglive-igw]
+#   depends_on = [aws_internet_gateway.diglive]
 # }

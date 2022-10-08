@@ -1,6 +1,6 @@
-##################################################
-# Relational Database Service
-##################################################
+# #==================================================
+# # DBパラメータグループ
+# #==================================================
 # resource "aws_db_parameter_group" "diglive" {
 #   name = "diglive"
 #   family = "mysql5.7"
@@ -16,9 +16,9 @@
 #   }
 # }
 
-# #=================================================
-# # DBオプション
-# #=================================================
+# #==================================================
+# # DBオプショングループ
+# #==================================================
 # resource "aws_db_option_group" "diglive" {
 #   name = "diglive"
 #   engine_name = "mysql"
@@ -29,20 +29,20 @@
 #   }
 # }
 
-# #=================================================
-# # DBサブネット
-# #=================================================
+# #==================================================
+# # DBサブネットグループ
+# #==================================================
 # resource "aws_db_subnet_group" "diglive" {
 #   name = "diglive"
 #   subnet_ids = [
-#     aws_subnet.diglive-sub-private-1a.id,
-#     aws_subnet.diglive-sub-private-1c.id
+#     aws_subnet.diglive_private_1a.id,
+#     aws_subnet.diglive_private_1c.id
 #   ]
 # }
 
-# #=================================================
+# #==================================================
 # # DBインスタンス
-# #=================================================
+# #==================================================
 # resource "aws_db_instance" "diglive" {
 #   identifier = "diglive"
 #   engine = "mysql"
@@ -52,7 +52,7 @@
 #   max_allocated_storage = 100
 #   storage_type = "gp2"
 #   storage_encrypted = true
-#   kms_key_id = aws_kms_key.diglive-key.arn
+#   kms_key_id = aws_kms_key.diglive.arn
 #   username = "admin"
 #   password = "VeryStrongPassword!"
 #   multi_az = true
@@ -65,7 +65,7 @@
 #   skip_final_snapshot = false
 #   port = 3306
 #   apply_immediately = false
-#   vpc_security_group_ids = [module.mysql_sg.security_group_id]
+#   vpc_security_group_ids = [module.diglive_sg_rds_mysql.security_group_id]
 #   parameter_group_name = aws_db_parameter_group.diglive.name
 #   option_group_name = aws_db_option_group.diglive.name
 #   db_subnet_group_name = aws_db_subnet_group.diglive.name

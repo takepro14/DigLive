@@ -1,26 +1,36 @@
-##################################################
-# Simple Storage Service
-##################################################
-#=================================================
-# プライベート
-#=================================================
-# バケット本体
-resource "aws_s3_bucket" "private" {
-  bucket = "private-haribotake-bucket"
+#==================================================
+# S3バケット
+#==================================================
+resource "aws_s3_bucket" "diglive_private" {
+  bucket = "diglive-private"
   force_destroy = true
 }
 
+resource "aws_s3_bucket" "diglive_public" {
+  bucket = "diglive-public"
+  force_destroy = true
+}
+
+resource "aws_s3_bucket" "diglive_log" {
+  bucket = "diglive-log"
+  force_destroy = true
+}
+
+
+#==================================================
+# private
+#==================================================
 # バージョニング
-resource "aws_s3_bucket_versioning" "private" {
-  bucket = aws_s3_bucket.private.id
+resource "aws_s3_bucket_versioning" "diglive_private" {
+  bucket = aws_s3_bucket.diglive_private.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-# オブジェクトの暗号化
-resource "aws_s3_bucket_server_side_encryption_configuration" "private" {
-  bucket = aws_s3_bucket.private.id
+# 暗号化
+resource "aws_s3_bucket_server_side_encryption_configuration" "diglive_private" {
+  bucket = aws_s3_bucket.diglive_private.id
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
@@ -28,26 +38,22 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "private" {
   }
 }
 
-#=================================================
-# パブリック
-#=================================================
-# パブリックアクセスのブロック
-resource "aws_s3_bucket_public_access_block" "private" {
-  bucket = aws_s3_bucket.private.id
+# パブリックアクセスブロック
+resource "aws_s3_bucket_public_access_block" "diglive_private" {
+  bucket = aws_s3_bucket.diglive_private.id
   block_public_acls = true
   block_public_policy = true
   ignore_public_acls = true
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket" "public" {
-  bucket = "public-haribotake-bucket"
-  force_destroy = true
-}
 
-# CORS設定
-resource "aws_s3_bucket_cors_configuration" "public" {
-  bucket = aws_s3_bucket.public.id
+#==================================================
+# public
+#==================================================
+# CORS
+resource "aws_s3_bucket_cors_configuration" "diglive_public" {
+  bucket = aws_s3_bucket.diglive_public.id
 
   cors_rule {
     allowed_origins = ["https://example.com"]
@@ -57,25 +63,19 @@ resource "aws_s3_bucket_cors_configuration" "public" {
   }
 }
 
-# ACL設定
-resource "aws_s3_bucket_acl" "public" {
-  bucket = aws_s3_bucket.public.id
+# ACL
+resource "aws_s3_bucket_acl" "diglive_public" {
+  bucket = aws_s3_bucket.diglive_public.id
 
   acl = "public-read"
 }
 
-
-#=================================================
-# ログ
-#=================================================
-resource "aws_s3_bucket" "log" {
-  bucket = "log-haribotake-bucket"
-  force_destroy = true
-}
-
+#==================================================
+# log
+#==================================================
 # ライフサイクルルール
-resource "aws_s3_bucket_lifecycle_configuration" "log" {
-  bucket = aws_s3_bucket.log.id
+resource "aws_s3_bucket_lifecycle_configuration" "diglive_log" {
+  bucket = aws_s3_bucket.diglive_log.id
 
   rule {
     id = "log"
@@ -88,22 +88,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "log" {
 }
 
 # バケットポリシー
-resource "aws_s3_bucket_policy" "log" {
-  bucket = aws_s3_bucket.log.id
-  policy = data.aws_iam_policy_document.log.json
+resource "aws_s3_bucket_policy" "diglive_log" {
+  bucket = aws_s3_bucket.diglive_log.id
+  policy = data.aws_iam_policy_document.diglive_log.json
 }
-
-data "aws_iam_policy_document" "log" {
-  statement {
-    effect = "Allow"
-    actions = ["s3:PutObject"]
-    resources = ["arn:aws:s3:::${aws_s3_bucket.log.id}/*"]
-
-    principals {
-      type = "AWS"
-      # 東京リージョンのAWSアカウントID(ALBで利用)
-      identifiers = ["582318560864"]
-    }
-  }
-}
-

@@ -1,9 +1,6 @@
-##################################################
-# Security Group
-##################################################
-#=================================================
-# Parameters
-#=================================================
+#==================================================
+# セキュリティグループ (module)
+#==================================================
 variable "name" {}
 variable "vpc_id" {}
 variable "port" {}
@@ -11,9 +8,6 @@ variable "cidr_blocks" {
   type = list(string)
 }
 
-#=================================================
-# セキュリティグループ本体
-#=================================================
 resource "aws_security_group" "default" {
   name = var.name
   vpc_id = var.vpc_id
@@ -22,9 +16,6 @@ resource "aws_security_group" "default" {
   }
 }
 
-#=================================================
-# ルール
-#=================================================
 resource "aws_security_group_rule" "ingress" {
   type = "ingress"
   from_port = var.port
@@ -43,9 +34,6 @@ resource "aws_security_group_rule" "egress" {
   security_group_id = aws_security_group.default.id
 }
 
-#=================================================
-# OUTPUT
-#=================================================
 output "security_group_id" {
   value = aws_security_group.default.id
 }

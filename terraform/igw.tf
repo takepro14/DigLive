@@ -1,10 +1,10 @@
-##################################################
-# Internet Gateway
-##################################################
-resource "aws_internet_gateway" "diglive-igw" {
-  vpc_id = aws_vpc.diglive-vpc.id
+#==================================================
+# インターネットゲートウェイ
+#==================================================
+resource "aws_internet_gateway" "diglive" {
+  vpc_id = aws_vpc.diglive.id
 
   tags = {
-    Name = "diglive-igw"
+    Name = "diglive"
   }
 }

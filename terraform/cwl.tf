@@ -1,6 +1,3 @@
-# ##################################################
-# # CloudWatch Logs
-# ##################################################
 # resource "aws_cloudwatch_log_group" "for_ecs" {
 #   name = "/ecs/diglive"
 #   # ログの保管期間
@@ -32,13 +29,13 @@
 #   target_id = "diglive-batch"
 #   rule = aws_cloudwatch_event_rule.diglive_batch.name
 #   role_arn = module.ecs_events_role.iam_role_arn
-#   arn = aws_ecs_cluster.diglive-ecs-cluster.arn
+#   arn = aws_ecs_cluster.diglive.arn
 
 #   ecs_target {
 #     launch_type = "FARGATE"
 #     task_count = 1
 #     platform_version = "1.3.1"
-#     task_definition_arn = aws_ecs_task_definition.diglive-ecs-task-def_batch.arn
+#     task_definition_arn = aws_ecs_task_definition.diglive_api_batch.arn
 
 #     network_configuration {
 #       assign_public_ip = "false"
