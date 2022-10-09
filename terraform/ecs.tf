@@ -8,20 +8,8 @@ resource "aws_ecs_cluster" "diglive" {
 #==================================================
 # ECSタスク定義
 #==================================================
-resource "aws_ecs_task_definition" "diglive_api" {
-  family = "diglive-api"
-  cpu = "256"
-  memory = "512"
-  network_mode = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  container_definitions = file("./container_definitions.json")
-  # Dockerコンテナのロギング
-  execution_role_arn = module.ecs_task_execution_role.iam_role_arn
-}
-
-# Front
-# resource "aws_ecs_task_definition" "diglive_front" {
-#   family = "diglive-front"
+# resource "aws_ecs_task_definition" "diglive_api" {
+#   family = "diglive-api"
 #   cpu = "256"
 #   memory = "512"
 #   network_mode = "awsvpc"
@@ -30,6 +18,16 @@ resource "aws_ecs_task_definition" "diglive_api" {
 #   # Dockerコンテナのロギング
 #   execution_role_arn = module.ecs_task_execution_role.iam_role_arn
 # }
+
+resource "aws_ecs_task_definition" "diglive_front" {
+  family                   = "diglive-front"
+  cpu                      = "256"
+  memory                   = "512"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  container_definitions    = file("./container_definitions_front.json")
+  execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
+}
 
 # Batch
 # resource "aws_ecs_task_definition" "diglive_batch" {
@@ -46,29 +44,31 @@ resource "aws_ecs_task_definition" "diglive_api" {
 #==================================================
 # ECSサービス
 #==================================================
-resource "aws_ecs_service" "diglive" {
-  name = "diglive"
-  cluster = aws_ecs_cluster.diglive.arn
-  task_definition = aws_ecs_task_definition.diglive_api.arn
-  desired_count = 2
-  launch_type = "FARGATE"
-  platform_version = "1.3.0"
-  health_check_grace_period_seconds = 60
+resource "aws_ecs_service" "diglive_front" {
+  name                              = "diglive-front" # diglive-front??
+  cluster                           = aws_ecs_cluster.diglive.arn
+  task_definition                   = aws_ecs_task_definition.diglive_front.arn
+  desired_count                     = 1
+  launch_type                       = "FARGATE"
+  platform_version                  = "1.3.0"
+  health_check_grace_period_seconds = 600
 
   network_configuration {
-    assign_public_ip = false
-    security_groups = [module.diglive_sg_ecs_nginx.security_group_id]
+    assign_public_ip = true
+    security_groups = [
+      module.diglive_sg_ecs_front.security_group_id
+    ]
 
     subnets = [
-      aws_subnet.diglive_private_1a.id,
-      aws_subnet.diglive_private_1c.id
+      aws_subnet.diglive_public_1a.id,
+      aws_subnet.diglive_public_1c.id
     ]
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.diglive-alb-tg.arn
-    container_name = "diglive"
-    container_port = 80
+    target_group_arn = aws_lb_target_group.diglive_front.arn
+    container_name   = "diglive-front"
+    container_port   = 80
   }
 
   lifecycle {

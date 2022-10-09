@@ -1,20 +1,20 @@
 [
   {
-    "name": "dig-live",
-    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-dig-live:latest",
+    "name": "diglive-front",
+    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-front:latest",
     "essential": true,
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
         "awslogs-region": "ap-northeast-1",
-        "awslogs-stream-prefix": "nginx",
-        "awslogs-group": "/ecs/dig-live"
+        "awslogs-stream-prefix": "front",
+        "awslogs-group": "/ecs/front"
       }
     },
     "portMappings": [
       {
         "protocol": "tcp",
-        "containerPort": 3000
+        "containerPort": 80
       }
     ]
   }

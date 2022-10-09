@@ -2,17 +2,17 @@
 # S3バケット
 #==================================================
 resource "aws_s3_bucket" "diglive_private" {
-  bucket = "diglive-private"
+  bucket        = "diglive-private"
   force_destroy = true
 }
 
 resource "aws_s3_bucket" "diglive_public" {
-  bucket = "diglive-public"
+  bucket        = "diglive-public"
   force_destroy = true
 }
 
 resource "aws_s3_bucket" "diglive_log" {
-  bucket = "diglive-log"
+  bucket        = "diglive-log"
   force_destroy = true
 }
 
@@ -40,10 +40,10 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "diglive_private" 
 
 # パブリックアクセスブロック
 resource "aws_s3_bucket_public_access_block" "diglive_private" {
-  bucket = aws_s3_bucket.diglive_private.id
-  block_public_acls = true
-  block_public_policy = true
-  ignore_public_acls = true
+  bucket                  = aws_s3_bucket.diglive_private.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
@@ -56,7 +56,7 @@ resource "aws_s3_bucket_cors_configuration" "diglive_public" {
   bucket = aws_s3_bucket.diglive_public.id
 
   cors_rule {
-    allowed_origins = ["https://example.com"]
+    allowed_origins = ["https://dig-live.com"]
     allowed_methods = ["GET"]
     allowed_headers = ["*"]
     max_age_seconds = 3000

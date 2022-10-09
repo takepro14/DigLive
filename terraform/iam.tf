@@ -6,22 +6,23 @@ data "aws_iam_policy" "ecs_task_execution_role_policy" {
 }
 
 data "aws_iam_policy_document" "ecs_task_execution" {
-  # 既存ポリシーを継承
-  source_policy_documents = [data.aws_iam_policy.ecs_task_execution_role_policy.policy]
+  # "source_json": 既存ポリシーを継承できる
+  source_json = data.aws_iam_policy.ecs_task_execution_role_policy.policy
 
   # SSMパラメータストアとECSの統合で必要な権限を追加
   statement {
-    effect = "Allow"
-    actions = ["ssm:GetParameters", "kms:Decrypt"]
+    effect    = "Allow"
+    actions   = ["ssm:GetParameters", "kms:Decrypt"]
     resources = ["*"]
   }
 }
 
-module "ecs_task_execution_role" {
+module "diglive_ecs_task_exec" {
   source = "./iam_role"
-  name = "ecs-task-execution"
+  name   = "diglive-ecs-task-exec"
+  # ECSで利用することを宣言する
   identifier = "ecs-tasks.amazonaws.com"
-  policy = data.aws_iam_policy_document.ecs_task_execution.json
+  policy     = data.aws_iam_policy_document.ecs_task_execution.json
 }
 
 #==================================================
@@ -44,8 +45,8 @@ module "ecs_task_execution_role" {
 #==================================================
 data "aws_iam_policy_document" "diglive_log" {
   statement {
-    effect = "Allow"
-    actions = ["s3:PutObject"]
+    effect    = "Allow"
+    actions   = ["s3:PutObject"]
     resources = ["arn:aws:s3:::${aws_s3_bucket.diglive_log.id}/*"]
 
     principals {

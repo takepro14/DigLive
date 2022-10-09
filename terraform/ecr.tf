@@ -1,9 +1,9 @@
 #==================================================
 # ECRリポジトリ
 #==================================================
-resource "aws_ecr_repository" "diglive_api" {
-  name = "diglive-api"
-}
+# resource "aws_ecr_repository" "diglive_api" {
+#   name = "diglive-api"
+# }
 
 resource "aws_ecr_repository" "diglive_front" {
   name = "diglive-front"
@@ -12,29 +12,29 @@ resource "aws_ecr_repository" "diglive_front" {
 #==================================================
 # ECRライフサイクルポリシー
 #==================================================
-resource "aws_ecr_lifecycle_policy" "diglive_api" {
-  repository = aws_ecr_repository.diglive_api.name
+# resource "aws_ecr_lifecycle_policy" "diglive_api" {
+#   repository = aws_ecr_repository.diglive_api.name
 
-  policy = <<EOF
-  {
-    "rules": [
-      {
-        "rulePriority": 1,
-        "desctiption": "Keep last 30 release tagged images",
-        "selection": {
-          "tagStatus": "tagged",
-          "tagPrefixList": ["release"],
-          "countType": "imageCountMoreThan",
-          "countNumber": 30
-        },
-        "action": {
-          "type": "expire"
-        }
-      }
-    ]
-  }
-  EOF
-}
+#   policy = <<EOF
+#   {
+#     "rules": [
+#       {
+#         "rulePriority": 1,
+#         "description": "Keep last 30 release tagged images",
+#         "selection": {
+#           "tagStatus": "tagged",
+#           "tagPrefixList": ["release"],
+#           "countType": "imageCountMoreThan",
+#           "countNumber": 30
+#         },
+#         "action": {
+#           "type": "expire"
+#         }
+#       }
+#     ]
+#   }
+#   EOF
+# }
 
 resource "aws_ecr_lifecycle_policy" "diglive_front" {
   repository = aws_ecr_repository.diglive_front.name
@@ -44,7 +44,7 @@ resource "aws_ecr_lifecycle_policy" "diglive_front" {
     "rules": [
       {
         "rulePriority": 1,
-        "desctiption": "Keep last 30 release tagged images",
+        "description": "Keep last 30 release tagged images",
         "selection": {
           "tagStatus": "tagged",
           "tagPrefixList": ["release"],

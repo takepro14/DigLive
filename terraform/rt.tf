@@ -26,8 +26,8 @@ resource "aws_route_table" "diglive_private_1c" {
 # ルート
 #==================================================
 resource "aws_route" "diglive_public" {
-  route_table_id = aws_route_table.diglive_public.id
-  gateway_id = aws_internet_gateway.diglive.id
+  route_table_id         = aws_route_table.diglive_public.id
+  gateway_id             = aws_internet_gateway.diglive.id
   destination_cidr_block = "0.0.0.0/0"
 }
 

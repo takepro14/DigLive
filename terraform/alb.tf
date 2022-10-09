@@ -2,10 +2,10 @@
 # ロードバランサー
 #==================================================
 resource "aws_lb" "diglive" {
-  name = "diglive"
+  name               = "diglive"
   load_balancer_type = "application"
-  internal = false
-  idle_timeout = 60
+  internal           = false
+  idle_timeout       = 60
   # enable_deletion_protection = true
 
   # マルチAZ化するため
@@ -15,7 +15,7 @@ resource "aws_lb" "diglive" {
   ]
 
   access_logs {
-    bucket = aws_s3_bucket.diglive_log.id
+    bucket  = aws_s3_bucket.diglive_log.id
     enabled = true
   }
 
@@ -24,6 +24,10 @@ resource "aws_lb" "diglive" {
     module.diglive_sg_alb_https.security_group_id,
     module.diglive_sg_alb_redirect.security_group_id
   ]
+
+  tags = {
+    Name = "diglive"
+  }
 }
 
 output "alb_dns_name" {
@@ -31,105 +35,63 @@ output "alb_dns_name" {
 }
 
 #==================================================
-# リスナー: HTTP
+# HTTPリスナー
 #==================================================
 resource "aws_lb_listener" "diglive_http" {
   load_balancer_arn = aws_lb.diglive.arn
-  port = "80"
-  protocol = "HTTP"
-
-  default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "これは『HTTP』です"
-      status_code = "200"
-    }
-  }
-}
-
-#==================================================
-# リスナー: HTTPS
-#==================================================
-resource "aws_lb_listener" "diglive_https" {
-  load_balancer_arn = aws_lb.diglive.arn
-  port = "443"
-  protocol = "HTTPS"
-  certificate_arn = aws_acm_certificate.diglive.arn
-  ssl_policy = "ELBSecurityPolicy-2016-08"
-
-  default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "これは『HTTPS』です"
-      status_code = "200"
-    }
-  }
-  depends_on = [
-    aws_acm_certificate_validation.diglive
-  ]
-}
-
-#==================================================
-# リスナー: リダイレクト(HTTP to HTTPS)
-#==================================================
-resource "aws_lb_listener" "diglive_redirect" {
-  load_balancer_arn = aws_lb.diglive.arn
-  port = "8080"
-  protocol = "HTTP"
+  port              = "80"
+  protocol          = "HTTP"
 
   default_action {
     type = "redirect"
 
     redirect {
-      port = "443"
-      protocol = "HTTPS"
+      port        = "443"
+      protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
   }
 }
 
-#==================================================
-# ターゲットグループ
-#==================================================
-resource "aws_lb_target_group" "diglive-alb-tg" {
-  name = "diglive"
-  target_type = "ip"
-  vpc_id = aws_vpc.diglive.id
-  port = 80
-  protocol = "HTTP"
-  deregistration_delay = 300
+# default_action {
+#   type = "fixed-response"
 
-  health_check {
-    path = "/"
-    healthy_threshold = 5
-    unhealthy_threshold = 2
-    timeout = 5
-    interval = 30
-    matcher = 200
-    port = "traffic-port"
-    protocol = "HTTP"
+#   fixed_response {
+#     content_type = "text/plain"
+#     message_body = "これは『HTTP』です"
+#     status_code = "200"
+#   }
+# }
+
+#==================================================
+# HTTPSリスナー
+#==================================================
+resource "aws_lb_listener" "diglive_https" {
+  load_balancer_arn = aws_lb.diglive.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate.diglive.arn
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+
+  default_action {
+    target_group_arn = aws_lb_target_group.diglive_front.arn
+    type             = "forward"
   }
 
   depends_on = [
-    aws_lb.diglive
+    aws_acm_certificate_validation.diglive
   ]
 }
 
-#==================================================
-# リスナールール
-#==================================================
-resource "aws_lb_listener_rule" "diglive-alb-listener-rule" {
+# HTTPSリスナーにルールをアタッチ
+resource "aws_lb_listener_rule" "diglive" {
   listener_arn = aws_lb_listener.diglive_https.arn
-  priority = 100
+  priority     = 100
 
   # フォワード先のターゲットグループ
   action {
-    type = "forward"
-    target_group_arn = aws_lb_target_group.diglive-alb-tg.arn
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.diglive_front.arn
   }
 
   condition {
@@ -138,3 +100,44 @@ resource "aws_lb_listener_rule" "diglive-alb-listener-rule" {
     }
   }
 }
+
+
+# resource "aws_lb_listener" "gadget-api-listener" {
+#   load_balancer_arn = aws_lb.gadget-alb.arn
+#   port              = "3000"
+#   protocol          = "HTTPS"
+#   certificate_arn   = aws_acm_certificate.gadget-acm.arn
+
+#   default_action {
+#     target_group_arn = aws_lb_target_group.gadget-alb-api-tg.arn
+#     type             = "forward"
+#   }
+# }
+
+#==================================================
+# ターゲットグループ
+#==================================================
+resource "aws_lb_target_group" "diglive_front" {
+  name        = "diglive-front"
+  target_type = "ip"
+  vpc_id      = aws_vpc.diglive.id
+  port        = 80
+  protocol    = "HTTP"
+
+  health_check {
+    enabled             = true
+    path                = "/"
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    timeout             = 5
+    interval            = 30
+    matcher             = 200
+    port                = "traffic-port"
+    protocol            = "HTTP"
+  }
+
+  depends_on = [
+    aws_lb.diglive
+  ]
+}
+

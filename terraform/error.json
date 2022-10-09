@@ -1,0 +1,102 @@
+{
+    "tasks": [
+        {
+            "attachments": [
+                {
+                    "id": "98725b8f-3498-4f99-861c-4e37d38b64cf",
+                    "type": "ElasticNetworkInterface",
+                    "status": "DELETED",
+                    "details": [
+                        {
+                            "name": "subnetId",
+                            "value": "subnet-0c680ed2e2be4007d"
+                        },
+                        {
+                            "name": "networkInterfaceId",
+                            "value": "eni-0d3f1bd241250147f"
+                        },
+                        {
+                            "name": "macAddress",
+                            "value": "0a:5c:a7:dc:a1:a1"
+                        },
+                        {
+                            "name": "privateDnsName",
+                            "value": "ip-10-0-65-51.ap-northeast-1.compute.internal"
+                        },
+                        {
+                            "name": "privateIPv4Address",
+                            "value": "10.0.65.51"
+                        }
+                    ]
+                }
+            ],
+            "attributes": [
+                {
+                    "name": "ecs.cpu-architecture",
+                    "value": "x86_64"
+                }
+            ],
+            "availabilityZone": "ap-northeast-1c",
+            "clusterArn": "arn:aws:ecs:ap-northeast-1:454636438913:cluster/diglive",
+            "connectivity": "CONNECTED",
+            "connectivityAt": "2022-10-09T22:19:37.869000+09:00",
+            "containers": [
+                {
+                    "containerArn": "arn:aws:ecs:ap-northeast-1:454636438913:container/diglive/01f7dd688259450c99918348f028a04a/31b06a7d-57ef-43da-9add-c99c662466e4",
+                    "taskArn": "arn:aws:ecs:ap-northeast-1:454636438913:task/diglive/01f7dd688259450c99918348f028a04a",
+                    "name": "diglive-front",
+                    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-front:latest",
+                    "imageDigest": "sha256:477afa80f02db35849061b4f1b4aba2c131cdcca92c7f6566d6058cb4ec16b4b",
+                    "runtimeId": "cefd7d4669c1b4a81f816ae7fe9cf4d0a06fb37dd709e6ea38d2355cb48acff2",
+                    "lastStatus": "STOPPED",
+                    "exitCode": 0,
+                    "networkBindings": [],
+                    "networkInterfaces": [
+                        {
+                            "attachmentId": "98725b8f-3498-4f99-861c-4e37d38b64cf",
+                            "privateIpv4Address": "10.0.65.51"
+                        }
+                    ],
+                    "healthStatus": "UNKNOWN",
+                    "cpu": "0"
+                }
+            ],
+            "cpu": "256",
+            "createdAt": "2022-10-09T22:19:32.495000+09:00",
+            "desiredStatus": "STOPPED",
+            "enableExecuteCommand": false,
+            "executionStoppedAt": "2022-10-09T22:19:48.605000+09:00",
+            "group": "service:diglive-front",
+            "healthStatus": "UNKNOWN",
+            "lastStatus": "STOPPED",
+            "launchType": "FARGATE",
+            "memory": "512",
+            "overrides": {
+                "containerOverrides": [
+                    {
+                        "name": "diglive-front"
+                    }
+                ],
+                "inferenceAcceleratorOverrides": []
+            },
+            "platformVersion": "1.3.0",
+            "platformFamily": "Linux",
+            "pullStartedAt": "2022-10-09T22:19:43.121000+09:00",
+            "pullStoppedAt": "2022-10-09T22:19:47.453000+09:00",
+            "startedAt": "2022-10-09T22:19:48.350000+09:00",
+            "startedBy": "ecs-svc/3211211777576582008",
+            "stopCode": "EssentialContainerExited",
+            "stoppedAt": "2022-10-09T22:20:11.749000+09:00",
+            "stoppedReason": "Essential container in task exited",
+            "stoppingAt": "2022-10-09T22:19:58.798000+09:00",
+            "tags": [],
+            "taskArn": "arn:aws:ecs:ap-northeast-1:454636438913:task/diglive/01f7dd688259450c99918348f028a04a",
+            "taskDefinitionArn": "arn:aws:ecs:ap-northeast-1:454636438913:task-definition/diglive-front:11",
+            "version": 6,
+            "ephemeralStorage": {
+                "sizeInGiB": 9
+            }
+        }
+    ],
+    "failures": []
+}
