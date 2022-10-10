@@ -26,6 +26,30 @@ module "diglive_ecs_task_exec" {
 }
 
 #==================================================
+# ECS Exec実行用ロール
+#==================================================
+data "aws_iam_policy_document" "diglive_ecs_exec_exec" {
+  version = "2012-10-17"
+  statement {
+    actions = [
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel"
+    ]
+    resources = ["*"]
+  }
+}
+
+module "diglive_ecs_exec_exec" {
+  source = "./iam_role"
+  name   = "diglive-ecs-exec-exec"
+  identifier = "ecs-tasks.amazonaws.com"
+  policy     = data.aws_iam_policy_document.diglive_ecs_exec_exec.json
+}
+
+
+#==================================================
 # CloudWatch イベント用ロール
 #==================================================
 # module "ecs_events_role" {

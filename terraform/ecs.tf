@@ -26,7 +26,7 @@ resource "aws_ecs_task_definition" "diglive_front" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   container_definitions    = file("./container_definitions_front.json")
-  execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
+  execution_role_arn       = module.diglive_ecs_exec_exec.iam_role_arn
 }
 
 # Batch
