@@ -1,15 +1,17 @@
 #==================================================
 # ECS タスク実行用ロール
 #==================================================
+# ポリシーを参照
 data "aws_iam_policy" "ecs_task_execution_role_policy" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# 権限を追加されたポリシーを参照
 data "aws_iam_policy_document" "ecs_task_execution" {
   # "source_json": 既存ポリシーを継承できる
   source_json = data.aws_iam_policy.ecs_task_execution_role_policy.policy
 
-  # SSMパラメータストアとECSの統合で必要な権限を追加
+  # SSMパラメータストアとECSの統合
   statement {
     effect    = "Allow"
     actions   = ["ssm:GetParameters", "kms:Decrypt"]
@@ -28,7 +30,7 @@ module "diglive_ecs_task_exec" {
 #==================================================
 # ECS Exec実行用ロール
 #==================================================
-data "aws_iam_policy_document" "diglive_ecs_exec_exec" {
+data "aws_iam_policy_document" "diglive_ecs_task_role" {
   version = "2012-10-17"
   statement {
     actions = [
@@ -41,11 +43,11 @@ data "aws_iam_policy_document" "diglive_ecs_exec_exec" {
   }
 }
 
-module "diglive_ecs_exec_exec" {
-  source = "./iam_role"
-  name   = "diglive-ecs-exec-exec"
+module "diglive_ecs_task_role" {
+  source     = "./iam_role"
+  name       = "diglive-ecs-task-role"
   identifier = "ecs-tasks.amazonaws.com"
-  policy     = data.aws_iam_policy_document.diglive_ecs_exec_exec.json
+  policy     = data.aws_iam_policy_document.diglive_ecs_task_role.json
 }
 
 

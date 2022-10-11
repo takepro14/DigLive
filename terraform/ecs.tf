@@ -26,7 +26,8 @@ resource "aws_ecs_task_definition" "diglive_front" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   container_definitions    = file("./container_definitions_front.json")
-  execution_role_arn       = module.diglive_ecs_exec_exec.iam_role_arn
+  task_role_arn            = module.diglive_ecs_task_role.iam_role_arn
+  execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
 }
 
 # Batch
@@ -45,12 +46,15 @@ resource "aws_ecs_task_definition" "diglive_front" {
 # ECSサービス
 #==================================================
 resource "aws_ecs_service" "diglive_front" {
-  name                              = "diglive-front" # diglive-front??
-  cluster                           = aws_ecs_cluster.diglive.arn
-  task_definition                   = aws_ecs_task_definition.diglive_front.arn
-  desired_count                     = 1
-  launch_type                       = "FARGATE"
-  platform_version                  = "1.3.0"
+  name            = "diglive-front" # diglive-front??
+  cluster         = aws_ecs_cluster.diglive.arn
+  task_definition = aws_ecs_task_definition.diglive_front.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  # ecs Exec使用のため1.4.0以降
+  platform_version = "1.4.0"
+  # ecs execの実行許可
+  enable_execute_command            = true
   health_check_grace_period_seconds = 600
 
   network_configuration {
