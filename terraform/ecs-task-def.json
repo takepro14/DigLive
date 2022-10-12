@@ -1,0 +1,39 @@
+{
+  "containerDefinitions": [
+    {
+      "cpu": 0,
+      "environment": [],
+      "essential": true,
+      "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-front:latest",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/front",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "front"
+        }
+      },
+      "mountPoints": [],
+      "name": "diglive-front",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "volumesFrom": []
+    }
+  ],
+  "cpu": "256",
+  "executionRoleArn": "arn:aws:iam::454636438913:role/diglive-ecs-task-exec",
+  "family": "diglive-front",
+  "memory": "512",
+  "networkMode": "awsvpc",
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "taskRoleArn": "arn:aws:iam::454636438913:role/diglive-ecs-task-role",
+  "volumes": []
+}
