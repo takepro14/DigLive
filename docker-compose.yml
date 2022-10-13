@@ -36,11 +36,9 @@ services:
       args:
         WORKDIR: $WORKDIR
         API_URL: "http://localhost:$API_PORT"
-    # 開発環境用のNuxt起動コマンド(本番環境用はHeroku.ymlで設定する)
     command: yarn run dev
     volumes:
       - ./front:/$WORKDIR
-    # コンテナの3000番を8080番で公開する設定
     ports:
       - "$FRONT_PORT:3000"
     depends_on:
