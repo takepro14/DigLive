@@ -83,23 +83,23 @@ resource "aws_lb_listener" "diglive_https" {
   ]
 }
 
-# HTTPSリスナーにルールをアタッチ
-resource "aws_lb_listener_rule" "diglive" {
-  listener_arn = aws_lb_listener.diglive_https.arn
-  priority     = 100
+# # HTTPSリスナーにルールをアタッチ
+# resource "aws_lb_listener_rule" "diglive" {
+#   listener_arn = aws_lb_listener.diglive_https.arn
+#   priority     = 100
 
-  # フォワード先のターゲットグループ
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.diglive_front.arn
-  }
+#   # フォワード先のターゲットグループ
+#   action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.diglive_front.arn
+#   }
 
-  condition {
-    path_pattern {
-      values = ["/*"]
-    }
-  }
-}
+#   condition {
+#     path_pattern {
+#       values = ["/*"]
+#     }
+#   }
+# }
 
 
 # resource "aws_lb_listener" "gadget-api-listener" {
@@ -127,12 +127,12 @@ resource "aws_lb_target_group" "diglive_front" {
   health_check {
     enabled             = true
     path                = "/"
-    healthy_threshold   = 5
+    healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 120
     interval            = 150
     matcher             = 200
-    port                = "traffic-port"
+    port                = 80
     protocol            = "HTTP"
   }
 
