@@ -14,7 +14,28 @@
     "portMappings": [
       {
         "protocol": "tcp",
-        "containerPort": 3000
+        "containerPort": 80
+      }
+    ],
+    "command": [
+      "yarn", "start"
+    ],
+    "environment": [
+      {
+        "name": "NODE_ENV",
+        "value": "production"
+      },
+      {
+        "name": "WORKDIR",
+        "value": "app"
+      },
+      {
+        "name": "HOST",
+        "value": "0.0.0.0"
+      },
+      {
+        "name": "PORT",
+        "value": "80"
       }
     ]
   }

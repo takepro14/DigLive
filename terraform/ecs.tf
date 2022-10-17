@@ -1,60 +1,75 @@
 #==================================================
-# ECSクラスター
+# クラスター
 #==================================================
 resource "aws_ecs_cluster" "diglive" {
   name = "diglive"
 }
 
 #==================================================
-# ECSタスク定義
+# タスク定義
 #==================================================
-# resource "aws_ecs_task_definition" "diglive_api" {
-#   family = "diglive-api"
-#   cpu = "256"
-#   memory = "512"
-#   network_mode = "awsvpc"
-#   requires_compatibilities = ["FARGATE"]
-#   container_definitions = file("./container_definitions.json")
-#   # Dockerコンテナのロギング
-#   execution_role_arn = module.ecs_task_execution_role.iam_role_arn
-# }
-
 resource "aws_ecs_task_definition" "diglive_front" {
   family                   = "diglive-front"
+  cpu                      = "512"
+  memory                   = "1024"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  container_definitions    = file("./tasks/diglive_front_container_definitions.json")
+  execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
+  task_role_arn            = module.diglive_ecs_task_role.iam_role_arn
+}
+
+resource "aws_ecs_task_definition" "diglive_api" {
+  family                   = "diglive-api"
   cpu                      = "256"
   memory                   = "512"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./container_definitions_front.json")
-  task_role_arn            = module.diglive_ecs_task_role.iam_role_arn
+  container_definitions    = file("./tasks/diglive_api_container_definitions.json")
   execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
+  task_role_arn            = module.diglive_ecs_task_role.iam_role_arn
 }
 
-# Batch
-# resource "aws_ecs_task_definition" "diglive_batch" {
-#   family = "diglive-batch"
-#   cpu = "256"
-#   memory = "512"
-#   network_mode = "awsvpc"
+# resource "aws_ecs_task_definition" "diglive_db_create" {
+#   family                   = "diglive-db-create"
+#   container_definitions    = file("./tasks/diglive_db_create_definition.json")
 #   requires_compatibilities = ["FARGATE"]
-#   container_definitions = file("./batch_container_definitions.json")
-#   # Dockerコンテナのロギング
-#   execution_role_arn = module.ecs_task_execution_role.iam_role_arn
+#   network_mode             = "awsvpc"
+#   cpu                      = "256"
+#   memory                   = "512"
+#   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
+# }
+# resource "aws_ecs_task_definition" "diglive_db_migrate" {
+#   family                   = "diglive-db-migrate"
+#   container_definitions    = file("./tasks/diglive_db_migrate_definition.json")
+#   requires_compatibilities = ["FARGATE"]
+#   network_mode             = "awsvpc"
+#   cpu                      = "256"
+#   memory                   = "512"
+#   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
+# }
+# resource "aws_ecs_task_definition" "diglive_db_migrate-reset" {
+#   family                   = "diglive-db-migrate-reset"
+#   container_definitions    = file("./tasks/diglive_db_migrate_reset_definition.json")
+#   requires_compatibilities = ["FARGATE"]
+#   network_mode             = "awsvpc"
+#   cpu                      = "256"
+#   memory                   = "512"
+#   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
 # }
 
+
 #==================================================
-# ECSサービス
+# サービス
 #==================================================
 resource "aws_ecs_service" "diglive_front" {
-  name            = "diglive-front" # diglive-front??
-  cluster         = aws_ecs_cluster.diglive.arn
-  task_definition = aws_ecs_task_definition.diglive_front.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-  # ecs Exec使用のため1.4.0以降
-  platform_version = "1.4.0"
-  # ecs execの実行許可
-  enable_execute_command            = true
+  name                              = "diglive-front"
+  cluster                           = aws_ecs_cluster.diglive.arn
+  task_definition                   = aws_ecs_task_definition.diglive_front.arn
+  desired_count                     = 1
+  launch_type                       = "FARGATE"
+  platform_version                  = "1.4.0" # ecs Exec使用のため1.4.0以降
+  enable_execute_command            = true    # ecs execの実行許可
   health_check_grace_period_seconds = 600
 
   network_configuration {
@@ -81,4 +96,38 @@ resource "aws_ecs_service" "diglive_front" {
   }
 
   depends_on = [aws_lb_listener.diglive_http]
+}
+
+
+resource "aws_ecs_service" "diglive_api" {
+  name                   = "diglive-api"
+  cluster                = aws_ecs_cluster.diglive.arn
+  task_definition        = aws_ecs_task_definition.diglive_api.arn
+  desired_count          = 1
+  launch_type            = "FARGATE"
+  platform_version       = "1.4.0" # ecs Exec使用のため1.4.0以降
+  enable_execute_command = true    # ecs execの実行許可
+
+  network_configuration {
+    assign_public_ip = true
+    security_groups = [
+      aws_security_group.diglive_ecs.id
+    ]
+
+    subnets = [
+      aws_subnet.diglive_public_1a.id,
+      aws_subnet.diglive_public_1c.id
+    ]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.diglive_api.arn
+    container_name   = "diglive-api"
+    container_port   = 3000
+  }
+
+  lifecycle {
+    # Fargateではデプロイのたびにタスク定義が更新されるため変更を無視する
+    ignore_changes = [task_definition]
+  }
 }

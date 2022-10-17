@@ -71,8 +71,8 @@ module "diglive_ecs_task_role" {
 #==================================================
 data "aws_iam_policy_document" "diglive_log" {
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "s3:GetObject",
       "s3:PutObject"
     ]

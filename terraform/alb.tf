@@ -33,7 +33,7 @@ output "alb_dns_name" {
 }
 
 #==================================================
-# HTTPリスナー
+# リスナー
 #==================================================
 resource "aws_lb_listener" "diglive_http" {
   load_balancer_arn = aws_lb.diglive.arn
@@ -51,25 +51,11 @@ resource "aws_lb_listener" "diglive_http" {
   }
 }
 
-# default_action {
-#   type = "fixed-response"
-
-#   fixed_response {
-#     content_type = "text/plain"
-#     message_body = "これは『HTTP』です"
-#     status_code = "200"
-#   }
-# }
-
-#==================================================
-# HTTPSリスナー
-#==================================================
 resource "aws_lb_listener" "diglive_https" {
   load_balancer_arn = aws_lb.diglive.arn
   port              = "443"
   protocol          = "HTTPS"
   certificate_arn   = aws_acm_certificate.diglive.arn
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
 
   default_action {
     target_group_arn = aws_lb_target_group.diglive_front.arn
@@ -81,46 +67,28 @@ resource "aws_lb_listener" "diglive_https" {
   ]
 }
 
-# # HTTPSリスナーにルールをアタッチ
-# resource "aws_lb_listener_rule" "diglive" {
-#   listener_arn = aws_lb_listener.diglive_https.arn
-#   priority     = 100
+resource "aws_lb_listener" "api_https" {
+  load_balancer_arn = aws_lb.diglive.arn
+  port              = "3000"
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate.diglive.arn
 
-#   # フォワード先のターゲットグループ
-#   action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.diglive_front.arn
-#   }
-
-#   condition {
-#     path_pattern {
-#       values = ["/*"]
-#     }
-#   }
-# }
-
-
-# resource "aws_lb_listener" "gadget-api-listener" {
-#   load_balancer_arn = aws_lb.gadget-alb.arn
-#   port              = "3000"
-#   protocol          = "HTTPS"
-#   certificate_arn   = aws_acm_certificate.gadget-acm.arn
-
-#   default_action {
-#     target_group_arn = aws_lb_target_group.gadget-alb-api-tg.arn
-#     type             = "forward"
-#   }
-# }
+  default_action {
+    target_group_arn = aws_lb_target_group.diglive_api.arn
+    type             = "forward"
+  }
+}
 
 #==================================================
 # ターゲットグループ
 #==================================================
 resource "aws_lb_target_group" "diglive_front" {
-  name        = "diglive-front"
-  target_type = "ip"
-  vpc_id      = aws_vpc.diglive.id
-  port        = 80
-  protocol    = "HTTP"
+  name                 = "diglive-front"
+  target_type          = "ip"
+  vpc_id               = aws_vpc.diglive.id
+  port                 = 80
+  protocol             = "HTTP"
+  deregistration_delay = 60
 
   health_check {
     enabled             = true
@@ -137,5 +105,26 @@ resource "aws_lb_target_group" "diglive_front" {
   depends_on = [
     aws_lb.diglive
   ]
+}
+
+resource "aws_lb_target_group" "diglive_api" {
+  name                 = "diglive-api"
+  target_type          = "ip"
+  vpc_id               = aws_vpc.diglive.id
+  port                 = 3000
+  protocol             = "HTTP"
+  deregistration_delay = 60
+
+  health_check {
+    enabled             = true
+    interval            = 60
+    path                = "/api/v1/tasks"
+    port                = 3000
+    protocol            = "HTTP"
+    matcher             = 200
+    timeout             = 50
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+  }
 }
 

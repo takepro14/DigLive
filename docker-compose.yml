@@ -25,7 +25,7 @@ services:
     depends_on:
       - db
     ports:
-      - "$API_PORT:3000"
+      - "$API_PORT:$CONTAINER_PORT"
     # デバッグ用
     tty: true
     stdin_open: true
@@ -40,6 +40,6 @@ services:
     volumes:
       - ./front:/$WORKDIR
     ports:
-      - "$FRONT_PORT:3000"
+      - "$FRONT_PORT:$CONTAINER_PORT"
     depends_on:
       - api

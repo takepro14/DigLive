@@ -1,6 +1,10 @@
 resource "aws_cloudwatch_log_group" "diglive_front" {
-  name = "/ecs/front"
-  # ログの保管期間
+  name              = "/ecs/front"
+  retention_in_days = 180
+}
+
+resource "aws_cloudwatch_log_group" "diglive_api" {
+  name              = "/ecs/api"
   retention_in_days = 180
 }
 
