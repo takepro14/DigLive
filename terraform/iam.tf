@@ -72,11 +72,15 @@ module "diglive_ecs_task_role" {
 data "aws_iam_policy_document" "diglive_log" {
   statement {
     effect    = "Allow"
-    actions   = ["s3:PutObject"]
+    actions   = [
+      "s3:GetObject",
+      "s3:PutObject"
+    ]
     resources = [
       "arn:aws:s3:::${aws_s3_bucket.diglive_log.id}/*"
     ]
 
+    # 適用対象
     principals {
       type = "AWS"
       # 東京リージョンのAWSアカウントID(ALBで利用)

@@ -60,7 +60,7 @@ resource "aws_ecs_service" "diglive_front" {
   network_configuration {
     assign_public_ip = true
     security_groups = [
-      module.diglive_sg_ecs_front.security_group_id
+      aws_security_group.diglive_ecs.id
     ]
 
     subnets = [

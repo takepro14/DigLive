@@ -20,9 +20,7 @@ resource "aws_lb" "diglive" {
   }
 
   security_groups = [
-    module.diglive_sg_alb_http.security_group_id,
-    module.diglive_sg_alb_https.security_group_id,
-    module.diglive_sg_alb_redirect.security_group_id
+    aws_security_group.diglive_alb.id
   ]
 
   tags = {
