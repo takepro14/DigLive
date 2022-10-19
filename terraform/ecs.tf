@@ -30,33 +30,33 @@ resource "aws_ecs_task_definition" "diglive_api" {
   task_role_arn            = module.diglive_ecs_task_role.iam_role_arn
 }
 
-# resource "aws_ecs_task_definition" "diglive_db_create" {
-#   family                   = "diglive-db-create"
-#   container_definitions    = file("./tasks/diglive_db_create_definition.json")
-#   requires_compatibilities = ["FARGATE"]
-#   network_mode             = "awsvpc"
-#   cpu                      = "256"
-#   memory                   = "512"
-#   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
-# }
-# resource "aws_ecs_task_definition" "diglive_db_migrate" {
-#   family                   = "diglive-db-migrate"
-#   container_definitions    = file("./tasks/diglive_db_migrate_definition.json")
-#   requires_compatibilities = ["FARGATE"]
-#   network_mode             = "awsvpc"
-#   cpu                      = "256"
-#   memory                   = "512"
-#   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
-# }
-# resource "aws_ecs_task_definition" "diglive_db_migrate-reset" {
-#   family                   = "diglive-db-migrate-reset"
-#   container_definitions    = file("./tasks/diglive_db_migrate_reset_definition.json")
-#   requires_compatibilities = ["FARGATE"]
-#   network_mode             = "awsvpc"
-#   cpu                      = "256"
-#   memory                   = "512"
-#   execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
-# }
+resource "aws_ecs_task_definition" "diglive_db_create" {
+  family                   = "diglive-db-create"
+  container_definitions    = file("./tasks/diglive_db_create_definition.json")
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
+}
+resource "aws_ecs_task_definition" "diglive_db_migrate" {
+  family                   = "diglive-db-migrate"
+  container_definitions    = file("./tasks/diglive_db_migrate_definition.json")
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
+}
+resource "aws_ecs_task_definition" "diglive_db_migrate-reset" {
+  family                   = "diglive-db-migrate-reset"
+  container_definitions    = file("./tasks/diglive_db_migrate_reset_definition.json")
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = module.diglive_ecs_task_exec.iam_role_arn
+}
 
 
 #==================================================
