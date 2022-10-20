@@ -37,6 +37,12 @@
         "name": "PORT",
         "value": "80"
       }
+    ],
+    "secrets": [
+      {
+        "name": "S3_BUCKET",
+        "valueFrom": "S3_BUCKET"
+      }
     ]
   }
 ]

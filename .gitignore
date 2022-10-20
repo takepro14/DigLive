@@ -1,13 +1,13 @@
-/.env
-/.DS_store
-
-# terraform
 .envrc
-.terraform.lock.hcl
+.gitignore
+.terraform
 .terraform-version
+.terraform.lock.hcl
+.tfvars
+.DS_store
+.env
+.env.prod
+crash.log
 terraform.tfstate
 terraform.tfstate.backup
 terraform.tfvars
-.terraform
-.tfvars
-crash.log

@@ -14,11 +14,13 @@ services:
     build:
       context: ./api
       args:
-        WORKDIR: $WORKDIR
-    environment:
-      API_DOMAIN: "localhost:$FRONT_PORT"
-      DB_PASSWORD: $DB_PASSWORD
-      BASE_URL: "http://localhost:$API_PORT"
+        WORKDIR:      $WORKDIR
+        FRONT_URL:    $FRONT_URL
+        API_URL:      $API_URL
+        DB_NAME:      $DB_NAME
+        DB_HOSTNAME:  $DB_HOSTNAME
+        DB_USERNAME:  $DB_USERNAME
+        DB_PASSWORD:  $DB_PASSWORD
     command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
       - "./api:/$WORKDIR"
@@ -26,7 +28,7 @@ services:
       - db
     ports:
       - "$API_PORT:$CONTAINER_PORT"
-    # デバッグ用
+    #----- デバッグ用 -----
     tty: true
     stdin_open: true
 
@@ -34,8 +36,9 @@ services:
     build:
       context: ./front
       args:
-        WORKDIR: $WORKDIR
-        API_URL: "http://localhost:$API_PORT"
+        APP_NAME:   $APP_NAME
+        WORKDIR:    $WORKDIR
+        IMAGE_URL:  $IMAGE_URL
     command: yarn run dev
     volumes:
       - ./front:/$WORKDIR
