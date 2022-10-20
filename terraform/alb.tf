@@ -15,7 +15,7 @@ resource "aws_lb" "diglive" {
   ]
 
   access_logs {
-    bucket  = aws_s3_bucket.diglive_log.id
+    bucket  = aws_s3_bucket.diglive_private_log.id
     enabled = true
   }
 

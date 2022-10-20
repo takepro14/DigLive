@@ -59,6 +59,14 @@
       {
         "name": "RAILS_MASTER_KEY",
         "valueFrom": "RAILS_MASTER_KEY"
+      },
+      {
+        "name": "ACCESS_KEY_ID",
+        "valueFrom": "ACCESS_KEY_ID"
+      },
+      {
+        "name": "SECRET_ACCESS_KEY_ID",
+        "valueFrom": "SECRET_ACCESS_KEY_ID"
       }
     ]
   }

@@ -2,8 +2,8 @@
 # IAM (module)
 #==================================================
 variable "name" {}
-variable "policy" {}
 variable "identifier" {}
+variable "policy" {}
 
 resource "aws_iam_role" "default" {
   name = var.name
@@ -16,7 +16,6 @@ data "aws_iam_policy_document" "assume_role" {
 
     principals {
       type = "Service"
-      # AWSの何のサービスで使うかの紐付け
       identifiers = [var.identifier]
     }
   }
