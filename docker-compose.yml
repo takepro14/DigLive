@@ -6,7 +6,7 @@ services:
     environment:
       TZ: UTC
       PGTZ: UTC
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      DB_PASSWORD: $DB_PASSWORD
     volumes:
       - "./api/tmp/db:/var/lib/postgresql/data"
 
@@ -17,7 +17,7 @@ services:
         WORKDIR: $WORKDIR
     environment:
       API_DOMAIN: "localhost:$FRONT_PORT"
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      DB_PASSWORD: $DB_PASSWORD
       BASE_URL: "http://localhost:$API_PORT"
     command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:

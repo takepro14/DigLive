@@ -29,6 +29,28 @@
         "name": "PORT",
         "value": "3000"
       }
+    ],
+    "secrets": [
+      {
+        "name": "DB_NAME",
+        "valueFrom": "DB_NAME"
+      },
+      {
+        "name": "DB_HOSTNAME",
+        "valueFrom": "DB_HOSTNAME"
+      },
+      {
+        "name": "DB_USERNAME",
+        "valueFrom": "DB_USERNAME"
+      },
+      {
+        "name": "DB_PASSWORD",
+        "valueFrom": "DB_PASSWORD"
+      },
+      {
+        "name": "RAILS_MASTER_KEY",
+        "valueFrom": "RAILS_MASTER_KEY"
+      }
     ]
   }
 ]

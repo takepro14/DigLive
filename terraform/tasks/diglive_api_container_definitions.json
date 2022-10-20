@@ -41,20 +41,24 @@
     ],
     "secrets": [
       {
-        "name": "DB_PASSWORD",
-        "valueFrom": "db-password"
+        "name": "DB_NAME",
+        "valueFrom": "DB_NAME"
       },
       {
-        "name": "DB_HOST",
-        "valueFrom": "db-host"
+        "name": "DB_HOSTNAME",
+        "valueFrom": "DB_HOSTNAME"
       },
       {
         "name": "DB_USERNAME",
-        "valueFrom": "db-username"
+        "valueFrom": "DB_USERNAME"
+      },
+      {
+        "name": "DB_PASSWORD",
+        "valueFrom": "DB_PASSWORD"
       },
       {
         "name": "RAILS_MASTER_KEY",
-        "valueFrom": "rails-master-key"
+        "valueFrom": "RAILS_MASTER_KEY"
       }
     ]
   }

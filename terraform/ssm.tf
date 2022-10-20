@@ -1,55 +1,84 @@
-#############################################################
-# SSMパラメータストア
-#############################################################
+resource "aws_ssm_parameter" "db_username" {
+  name        = "DB_USERNAME"
+  description = ""
+  type        = "SecureString"
+  value       = var.db_username
+}
 
-# #============================================================
-# # Common
-# #============================================================
-# variable "AWS_ACCESS_KEY_ID" {}
-# variable "AWS_SECRET_ACCESS_KEY" {}
+resource "aws_ssm_parameter" "db_password" {
+  name        = "DB_PASSWORD"
+  description = ""
+  type        = "SecureString"
+  value       = var.db_password
+}
 
-# resource "aws_ssm_parameter" "access-key-id" {
-#   name = "access-key-id"
-#   value = var.AWS_ACCESS_KEY_ID
-#   type = "SecureString"
-#   description = "AWS_ACCESS_KEY_ID"
-# }
-# resource "aws_ssm_parameter" "secret-access-key" {
-#   name = "secret-access-key"
-#   value = var.AWS_SECRET_ACCESS_KEY
-#   type = "SecureString"
-#   description = "AWS_SECRET_ACCESS_KEY"
-# }
+resource "aws_ssm_parameter" "workdir" {
+  name        = "WORKDIR"
+  description = ""
+  type        = "SecureString"
+  value       = var.workdir
+}
 
-# #============================================================
-# # API
-# #============================================================
-# variable "DB_USERNAME" {}
-# variable "DB_PASSWORD" {}
-# variable "DB_HOST" {}
-# variable "RAILS_MASTER_KEY" {}
+resource "aws_ssm_parameter" "front_port" {
+  name        = "FRONT_PORT"
+  description = ""
+  type        = "SecureString"
+  value       = var.front_port
+}
 
-# resource "aws_ssm_parameter" "db-username" {
-#   name = "db-username"
-#   value = var.DB_USERNAME
-#   type = "SecureString"
-#   description = "DB_USERNAME"
-# }
-# resource "aws_ssm_parameter" "db-password" {
-#   name = "db-password"
-#   value = var.DB_PASSWORD
-#   type = "SecureString"
-#   description = "DB_PASSWORD"
-# }
-# resource "aws_ssm_parameter" "db_host" {
-#   name = "db-host"
-#   value = var.DB_HOST
-#   type = "SecureString"
-#   description = "DB_HOST"
-# }
-# resource "aws_ssm_parameter" "rails-master-key" {
-#   name = "rails-master-key"
-#   value = var.RAILS_MASTER_KEY
-#   type = "SecureString"
-#   description = "RAILS_MASTER_KEY"
-# }
+resource "aws_ssm_parameter" "api_domain" {
+  name        = "API_DOMAIN"
+  description = ""
+  type        = "SecureString"
+  value       = var.api_domain
+}
+
+resource "aws_ssm_parameter" "base_url" {
+  name        = "BASE_URL"
+  description = ""
+  type        = "SecureString"
+  value       = var.base_url
+}
+
+resource "aws_ssm_parameter" "api_port" {
+  name        = "API_PORT"
+  description = ""
+  type        = "SecureString"
+  value       = var.api_port
+}
+
+resource "aws_ssm_parameter" "rails_master_key" {
+  name        = "RAILS_MASTER_KEY"
+  description = ""
+  type        = "SecureString"
+  value       = var.rails_master_key
+}
+
+resource "aws_ssm_parameter" "container_port" {
+  name        = "CONTAINER_PORT"
+  description = ""
+  type        = "SecureString"
+  value       = var.container_port
+}
+
+resource "aws_ssm_parameter" "db_name" {
+  name        = "DB_NAME"
+  description = ""
+  type        = "SecureString"
+  value       = var.db_name
+}
+
+resource "aws_ssm_parameter" "db_hostname" {
+  name        = "DB_HOSTNAME"
+  description = ""
+  type        = "SecureString"
+  value       = var.db_hostname
+}
+
+resource "aws_ssm_parameter" "api_url" {
+  name        = "API_URL"
+  description = ""
+  type        = "SecureString"
+  value       = var.api_url
+}
+
