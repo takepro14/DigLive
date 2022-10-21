@@ -44,10 +44,6 @@
         "valueFrom": "APP_NAME"
       },
       {
-        "name": "IMAGE_URL",
-        "valueFrom": "IMAGE_URL"
-      },
-      {
         "name": "API_URL",
         "valueFrom": "API_URL"
       }

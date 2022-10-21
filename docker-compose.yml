@@ -17,6 +17,7 @@ services:
         WORKDIR:      $WORKDIR
         FRONT_URL:    $FRONT_URL
         API_URL:      $API_URL
+        IMAGE_URL:    $IMAGE_URL
         DB_NAME:      $DB_NAME
         DB_HOSTNAME:  $DB_HOSTNAME
         DB_USERNAME:  $DB_USERNAME
