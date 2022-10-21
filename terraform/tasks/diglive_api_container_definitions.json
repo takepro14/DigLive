@@ -67,6 +67,14 @@
       {
         "name": "SECRET_ACCESS_KEY_ID",
         "valueFrom": "SECRET_ACCESS_KEY_ID"
+      },
+      {
+        "name": "FRONT_URL",
+        "valueFrom": "FRONT_URL"
+      },
+      {
+        "name": "API_URL",
+        "valueFrom": "API_URL"
       }
     ]
   }

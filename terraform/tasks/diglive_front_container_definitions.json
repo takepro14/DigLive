@@ -40,8 +40,16 @@
     ],
     "secrets": [
       {
-        "name": "S3_BUCKET",
-        "valueFrom": "S3_BUCKET"
+        "name": "APP_NAME",
+        "valueFrom": "APP_NAME"
+      },
+      {
+        "name": "IMAGE_URL",
+        "valueFrom": "IMAGE_URL"
+      },
+      {
+        "name": "API_URL",
+        "valueFrom": "API_URL"
       }
     ]
   }

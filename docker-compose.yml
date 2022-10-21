@@ -36,8 +36,9 @@ services:
     build:
       context: ./front
       args:
-        APP_NAME:   $APP_NAME
         WORKDIR:    $WORKDIR
+        APP_NAME:   $APP_NAME
+        API_URL:    $API_URL
         IMAGE_URL:  $IMAGE_URL
     command: yarn run dev
     volumes:
