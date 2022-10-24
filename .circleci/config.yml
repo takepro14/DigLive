@@ -1,129 +1,81 @@
 version: 2.1
 
-# orbs:
-#   aws-ecr: circleci/aws-ecr@6.15.3
-#   aws-ecs: circleci/aws-ecs@2.1.0
-#   aws-cli: circleci/aws-cli@1.4.1
+orbs:
+  aws-ecr: circleci/aws-ecr@8.1.3
+  aws-ecs: circleci/aws-ecs@1.2.0
+  aws-cli: circleci/aws-cli@0.1.16
 
 jobs:
-  ##################################################
-  # apiテスト
-  ##################################################
-  test_api:
-    docker:
-      - image: circleci/ruby:2.7.5-node-browsers-legacy
-        environment:
-          RAILS_ENV: test
-          DB_HOST: 127.0.0.1
-      - image: circleci/postgres:13.5-postgis
-    working_directory: ~/repo
+  build:
+    machine:
+      image: circleci/classic:edge
     steps:
-      #==================================================
-      # コードの取得
-      #==================================================
       - checkout
-      #==================================================
-      # キャッシュからgemを復元
-      #==================================================
-      - restore_cache:
-          keys:
-            - gem-cache-v1-{{ checksum "~/repo/api/Gemfile.lock" }}
-            - gem-cache-v1-
-          working_directory: ~/repo/api
-      #==================================================
-      # Gemインストール
-      #==================================================
       - run:
-          command: |
-            gem install bundler
-            bundle config set path 'vendor/bundle'
-            bundle install --jobs=4 --retry=3
-          working_directory: ~/repo/api
-      - save_cache:
-          key: gem-cache-v1-{{ checksum "~/repo/api/Gemfile.lock" }}
-          paths:
-            - ~/repo/api/vendor/bundle
-          working_directory: ~/repo/api
-      #==================================================
-      # DBセットアップ
-      #==================================================
-      - run:
-          command: bundle exec rails db:create
-          working_directory: ~/repo/api
-      - run:
-          command: bundle exec rails db:migrate
-          working_directory: ~/repo/api
-      - run:
-          name: create directory to store test results
-          command: mkdir /tmp/test-results
-          working_directory: ~/repo/api
-      #==================================================
-      # テスト実行
-      #==================================================
-      - run:
-          name: RSpec
-          command: |
-            bundle exec rspec $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings) \
-              || (printf "====== RETRYING...\n\n\n"; bundle exec rspec --only-failures)
-          working_directory: ~/repo/api
-      #==================================================
-      # 実行結果
-      #==================================================
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
-      - store_artifacts:
-          path: /home/circleci/repo/tmp/screenshots
-
-  ##################################################
-  # frontテスト
-  ##################################################
-  test_front:
-    docker:
-      - image: circleci/node:16.13.1-stretch-browsers-legacy
-        environment:
-          NODE_ENV: test
-    working_directory: ~/repo
+          name: docker-compose build
+          command: docker-compose build
+  test:
+    machine:
+      image: circleci/classic:edge
     steps:
-      #==================================================
-      # コードの取得
-      #==================================================
       - checkout
-      #==================================================
-      # キャッシュ
-      #==================================================
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "~/repo/front/package.json" }}
-          working_directory: ~/repo/front
       - run:
-          name: install-packages
-          command: yarn install
-          working_directory: ~/repo/front
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "~/repo/front/package.json" }}
-          working_directory: ~/repo/front
-      #==================================================
-      # テスト実行
-      #==================================================
+          name: docker-compose up -d
+          command: docker-compose up -d
+      - run: sleep 10
       - run:
-          name: test
-          command: yarn run test
-          working_directory: ~/repo/front
+          name: docker-compose run api rails db:create RAILS_ENV=test
+          command: docker-compose run api rails db:create RAILS_ENV=test
+      - run:
+          name: docker-compose run api rails db:migrate RAILS_ENV=test
+          command: docker-compose run api rails db:migrate RAILS_ENV=test
+      - run:
+          name: docker-compose run api bundle exec rspec spec
+          command: docker-compose run api bundle exec rspec spec
+      - run:
+          name: docker-compose run front yarn install
+          command: docker-compose run front yarn install
+      - run:
+          name: docker-compose run front yarn run test
+          command: docker-compose run front yarn test
+      - run:
+          name: docker-compose down
+          command: docker-compose down
 
 workflows:
-  version: 2
-  test:
+  build_and_test_and_deploy:
     jobs:
-      - test_api:
+      - build
+      - test:
+          requires:
+            - build
+      - aws-ecr/build-and-push-image:
+          name: 'build-and-push-api'
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: AWS_REGION
+          repo: ${API_REPO}
+          tag: "${CIRCLE_SHA1}"
+          path: './api'
+          requires:
+            - test
           filters:
             branches:
-              ignore: master
-      - test_front:
+              only:
+                - master
+      - aws-ecr/build-and-push-image:
+          name: 'build-and-push-front'
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: AWS_REGION
+          repo: ${FRONT_REPO}
+          tag: "${CIRCLE_SHA1}"
+          path: './front'
+          requires:
+            - test
           filters:
             branches:
-              ignore: master
+              only:
+                - master
