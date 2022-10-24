@@ -6,124 +6,124 @@ version: 2.1
 #   aws-cli: circleci/aws-cli@1.4.1
 
 jobs:
-  build:
-    machine: true
+  ##################################################
+  # apiテスト
+  ##################################################
+  test_api:
+    docker:
+      - image: circleci/ruby:2.7.5-node-browsers-legacy
+        environment:
+          RAILS_ENV: test
+          DB_HOST: 127.0.0.1
+      - image: circleci/postgres:13.5-postgis
+    working_directory: ~/repo
     steps:
+      #==================================================
+      # コードの取得
+      #==================================================
       - checkout
+      #==================================================
+      # キャッシュからgemを復元
+      #==================================================
+      - restore_cache:
+          keys:
+            - gem-cache-v1-{{ checksum "~/repo/api/Gemfile.lock" }}
+            - gem-cache-v1-
+          working_directory: ~/repo/api
+      #==================================================
+      # Gemインストール
+      #==================================================
       - run:
-          name: docker-compose build
-          command: docker-compose build
-  test:
-    machine: true
-    steps:
-      - checkout
+          command: |
+            gem install bundler
+            bundle config set path 'vendor/bundle'
+            bundle install --jobs=4 --retry=3
+          working_directory: ~/repo/api
+      - save_cache:
+          key: gem-cache-v1-{{ checksum "~/repo/api/Gemfile.lock" }}
+          paths:
+            - ~/repo/api/vendor/bundle
+          working_directory: ~/repo/api
+      #==================================================
+      # DBセットアップ
+      #==================================================
       - run:
-          name: docker-compose up -d
-          command: docker-compose up -d
-      - run: sleep 10
-      # ----- バックエンド -----
+          command: bundle exec rails db:create
+          working_directory: ~/repo/api
       - run:
-          name: docker-compose run api rails db:create RAILS_ENV=test
-          command: docker-compose run api rails db:create RAILS_ENV=test
+          command: bundle exec rails db:migrate
+          working_directory: ~/repo/api
       - run:
-          name: docker-compose run api rails db:migrate RAILS_ENV=test
-          command: docker-compose run api rails db:migrate RAILS_ENV=test
+          name: create directory to store test results
+          command: mkdir /tmp/test-results
+          working_directory: ~/repo/api
+      #==================================================
+      # テスト実行
+      #==================================================
       - run:
-          # name: docker-compose run api bundle exec rspec spec
-          # command: docker-compose run api bundle exec rspec spec
-          # 暫定的に一部のテストのみ実施
-          name: docker-compose run api bundle exec rspec spec/models/user_spec.rb
-          command: docker-compose run api bundle exec rspec spec/models/user_spec.rb
-      # - run:
-      #     name: Rubocop
-      #     command:  docker-compose run api bundle exec rubocop
-      - run:
-          name: docker-compose run front yarn install
-          command: docker-compose run front yarn install
-      # ----- フロントエンド -----
-      - run:
-          name: docker-compose run front yarn test
-          command: docker-compose run front yarn test
-      # ----- 共通 -----
-      - run:
-          name: docker-compose down
-          command: docker-compose down
+          name: RSpec
+          command: |
+            bundle exec rspec $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings) \
+              || (printf "====== RETRYING...\n\n\n"; bundle exec rspec --only-failures)
+          working_directory: ~/repo/api
+      #==================================================
+      # 実行結果
+      #==================================================
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+      - store_artifacts:
+          path: /home/circleci/repo/tmp/screenshots
 
-# 順番を制御するworkflow
+  ##################################################
+  # frontテスト
+  ##################################################
+  test_front:
+    docker:
+      - image: circleci/node:14.3
+        environment:
+          NODE_ENV: test
+    working_directory: ~/repo
+    steps:
+      #==================================================
+      # コードの取得
+      #==================================================
+      - checkout
+      #==================================================
+      # キャッシュ
+      #==================================================
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "~/repo/front/package.json" }}
+          working_directory: ~/repo/front
+      - run:
+          name: install-packages
+          command: yarn install
+          working_directory: ~/repo/front
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "~/repo/front/package.json" }}
+          working_directory: ~/repo/front
+      #==================================================
+      # テスト実行
+      #==================================================
+      - run:
+          name: test
+          command: yarn run test
+          working_directory: ~/repo/front
+
 workflows:
-  build_and_test_and_deploy:
+  version: 2
+  test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
-      # - aws-ecr/build-and-push-image:
-      #     name: 'build-and-push-backend'
-      #     account-url: AWS_ECR_ACCOUNT_URL
-      #     region: AWS_REGION
-      #     repo: 'code-craft-backend'
-      #     tag: "${CIRCLE_SHA1}"
-      #     path: './backend'
-      #     dockerfile: Dockerfile.prd
-      #     requires:
-      #       - test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      # - aws-ecr/build-and-push-image:
-      #     name: 'build-and-push-frontend'
-      #     account-url: AWS_ECR_ACCOUNT_URL
-      #     region: AWS_REGION
-      #     repo: 'code-craft-frontend'
-      #     tag: "${CIRCLE_SHA1}"
-      #     path: './frontend'
-      #     dockerfile: Dockerfile.prd
-      #     requires:st
-      #       - test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      # - aws-ecs/update-task-definition:
-      #     family: ${FAMILY_NAME_MIGRATE} # rails db:migrate用　タスク定義名
-      #     container-image-name-updates: 'container=backend-container,tag=${CIRCLE_SHA1}'
-      #     aws-region: AWS_REGION
-      #     requires:
-      #       - build-and-push-backend
-      #     filters:
-      #       branches:
-      #         only: master
-      # - aws-ecs/run-task:
-      #     cluster: ${CLUSTER_NAME}
-      #     task-definition: ${TASK_MIGRATE}
-      #     subnet-ids: "${SUBNET_PUBLIC_1A},${SUBNET_PUBLIC_1C}"
-      #     assign-public-ip: ENABLED
-      #     security-group-ids: "${MIGRATION_SECURITY_GROUP_ID}"
-      #     requires:
-      #       - aws-ecs/update-task-definition
-      #     filters:
-      #       branches:
-      #         only: master
-      # - aws-ecs/deploy-service-update:
-      #       family: ${FAMILY_NAME_BACKEND}
-      #       service-name: ${SERVICE_NAME_BACKEND}
-      #       cluster-name: ${CLUSTER_NAME}
-      #       container-image-name-updates: 'container=backend-container,tag=${CIRCLE_SHA1}'
-      #       requires:
-      #         - aws-ecs/run-task
-      #       filters:
-      #         branches:
-      #           only:
-      #             - master
-      # - aws-ecs/deploy-service-update:
-      #       family: ${FAMILY_NAME_FRONTEND}
-      #       service-name: ${SERVICE_NAME_FRONTEND}
-      #       cluster-name: ${CLUSTER_NAME}
-      #       container-image-name-updates: 'container=frontend-container,tag=${CIRCLE_SHA1}'
-      #       requires:
-      #         - build-and-push-frontend
-      #       filters:
-      #         branches:
-      #           only:
-      #             - master
+      - test_api:
+          filters:
+            branches:
+              ignore: master
+      - test_front:
+          filters:
+            branches:
+              ignore: master
