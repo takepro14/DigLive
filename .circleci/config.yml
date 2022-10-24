@@ -82,7 +82,7 @@ jobs:
   ##################################################
   test_front:
     docker:
-      - image: circleci/node:14.3
+      - image: circleci/node:16.13.1-stretch-browsers-legacy
         environment:
           NODE_ENV: test
     working_directory: ~/repo
