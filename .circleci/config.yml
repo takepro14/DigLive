@@ -69,37 +69,14 @@ jobs:
           path: ./front
 
 workflows:
+  version: 2
   build_and_test_and_deploy:
     jobs:
       - build
       - test:
           requires:
             - build
-<<<<<<< Updated upstream
-      - aws-ecr/build-and-push-image:
-          name: 'build-and-push-api'
-          account-url: AWS_ECR_ACCOUNT_URL
-          region: AWS_REGION
-          repo: ${API_REPO}
-          tag: "${CIRCLE_SHA1}"
-          path: './api'
-          requires:
-            - test
-          # masterブランチへのpush時のみ実行
-          filters:
-            branches:
-              only:
-                - master
-      - aws-ecr/build-and-push-image:
-          name: 'build-and-push-front'
-          account-url: AWS_ECR_ACCOUNT_URL
-          region: AWS_REGION
-          repo: ${FRONT_REPO}
-          tag: "${CIRCLE_SHA1}"
-          path: './front'
-=======
       - build_and_push_image_api:
->>>>>>> Stashed changes
           requires:
             - test
           filters:
