@@ -6,7 +6,7 @@ services:
     environment:
       TZ: UTC
       PGTZ: UTC
-      DB_PASSWORD: $DB_PASSWORD
+      POSTGRES_PASSWORD: $DB_PASSWORD
     volumes:
       - "./api/tmp/db:/var/lib/postgresql/data"
 
