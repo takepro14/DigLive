@@ -60,7 +60,6 @@ workflows:
           repo: ${API_REPO}
           tag: "${CIRCLE_SHA1}"
           path: './api'
-          dockerfile: Dockerfile
           requires:
             - test
           # masterブランチへのpush時のみ実行
@@ -77,7 +76,6 @@ workflows:
           repo: ${FRONT_REPO}
           tag: "${CIRCLE_SHA1}"
           path: './front'
-          dockerfile: Dockerfile
           requires:
             - test
           filters:
