@@ -10,6 +10,8 @@ jobs:
     machine: true
     steps:
       - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
       - run:
           name: docker-compose build
           command: docker-compose build
