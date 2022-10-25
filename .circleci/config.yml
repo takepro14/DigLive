@@ -54,8 +54,6 @@ workflows:
       - aws-ecr/build-and-push-image:
           name: 'build-and-push-api'
           account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           region: AWS_REGION
           repo: ${API_REPO}
           tag: "${CIRCLE_SHA1}"
@@ -70,8 +68,6 @@ workflows:
       - aws-ecr/build-and-push-image:
           name: 'build-and-push-front'
           account-url: AWS_ECR_ACCOUNT_URL
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           region: AWS_REGION
           repo: ${FRONT_REPO}
           tag: "${CIRCLE_SHA1}"
