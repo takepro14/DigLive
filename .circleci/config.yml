@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@6.15.3
+  aws-ecr: circleci/aws-ecr@6.12.2
   aws-ecs: circleci/aws-ecs@1.2.0
   aws-cli: circleci/aws-cli@1.4.1
 
@@ -43,6 +43,30 @@ jobs:
       - run:
           name: docker-compose down
           command: docker-compose down
+  build_and_push_image_api:
+    machine: true
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          repo: ${API_REPO}
+          region: AWS_REGION
+          tag: "${CIRCLE_SHA1}"
+          path: ./api
+  build_and_push_image_front:
+    machine: true
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ACCOUNT_URL
+          repo: ${FRONT_REPO}
+          region: AWS_REGION
+          tag: "${CIRCLE_SHA1}"
+          path: ./front
 
 workflows:
   build_and_test_and_deploy:
@@ -51,6 +75,7 @@ workflows:
       - test:
           requires:
             - build
+<<<<<<< Updated upstream
       - aws-ecr/build-and-push-image:
           name: 'build-and-push-api'
           account-url: AWS_ECR_ACCOUNT_URL
@@ -72,9 +97,17 @@ workflows:
           repo: ${FRONT_REPO}
           tag: "${CIRCLE_SHA1}"
           path: './front'
+=======
+      - build_and_push_image_api:
+>>>>>>> Stashed changes
           requires:
             - test
           filters:
             branches:
-              only:
-                - master
+              only: master
+      - build_and_push_image_front:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
