@@ -7,6 +7,7 @@
 .DS_store
 .env
 .env.prod
+.env.test
 crash.log
 terraform.tfstate
 terraform.tfstate.backup
