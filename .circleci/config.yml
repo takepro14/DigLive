@@ -54,7 +54,7 @@ jobs:
           region: AWS_REGION
           tag: "${CIRCLE_SHA1}"
           path: ./api
-  build_and_push_image__front:
+  build_and_push_image_front:
     machine: true
     steps:
       - checkout
