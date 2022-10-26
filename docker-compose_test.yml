@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./api
+      args:
+        FRONT_URL:    $FRONT_URL
+        API_URL:      $API_URL
+        IMAGE_URL:    $IMAGE_URL
+        DB_NAME:      $DB_NAME
+        DB_HOSTNAME:  $DB_HOSTNAME
+        DB_USERNAME:  $DB_USERNAME
+        DB_PASSWORD:  $DB_PASSWORD
+    command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - "./api:/app"
+    depends_on:
+      - db
+    ports:
+      - "$API_PORT:$CONTAINER_PORT"
+    #----- デバッグ用 -----
+    tty: true
+    stdin_open: true
