@@ -14,7 +14,6 @@ services:
     build:
       context: ./api
       args:
-        WORKDIR:      $WORKDIR
         FRONT_URL:    $FRONT_URL
         API_URL:      $API_URL
         IMAGE_URL:    $IMAGE_URL
@@ -24,7 +23,7 @@ services:
         DB_PASSWORD:  $DB_PASSWORD
     command: /bin/sh -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     volumes:
-      - "./api:/$WORKDIR"
+      - "./api:/app"
     depends_on:
       - db
     ports:
@@ -37,13 +36,12 @@ services:
     build:
       context: ./front
       args:
-        WORKDIR:    $WORKDIR
         APP_NAME:   $APP_NAME
         API_URL:    $API_URL
         IMAGE_URL:  $IMAGE_URL
     command: yarn run dev
     volumes:
-      - ./front:/$WORKDIR
+      - ./front:/app
     ports:
       - "$FRONT_PORT:$CONTAINER_PORT"
     depends_on:
