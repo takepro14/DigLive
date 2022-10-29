@@ -1,28 +1,16 @@
-variable "db_password" {
-  type        = string
-  description = ""
-  default     = ""
-}
-
-variable "image_url" {
-  type        = string
-  description = ""
-  default     = ""
-}
-
-variable "access_key_id" {
-  type        = string
-  description = ""
-  default     = ""
-}
-
 variable "api_url" {
   type        = string
   description = ""
   default     = ""
 }
 
-variable "db_hostname" {
+variable "front_url" {
+  type        = string
+  description = ""
+  default     = ""
+}
+
+variable "db_password" {
   type        = string
   description = ""
   default     = ""
@@ -34,7 +22,25 @@ variable "rails_master_key" {
   default     = ""
 }
 
-variable "front_url" {
+variable "db_hostname" {
+  type        = string
+  description = ""
+  default     = ""
+}
+
+variable "app_name" {
+  type        = string
+  description = ""
+  default     = ""
+}
+
+variable "access_key_id" {
+  type        = string
+  description = ""
+  default     = ""
+}
+
+variable "secret_access_key_id" {
   type        = string
   description = ""
   default     = ""
@@ -47,18 +53,6 @@ variable "db_name" {
 }
 
 variable "db_username" {
-  type        = string
-  description = ""
-  default     = ""
-}
-
-variable "secret_access_key_id" {
-  type        = string
-  description = ""
-  default     = ""
-}
-
-variable "app_name" {
   type        = string
   description = ""
   default     = ""
