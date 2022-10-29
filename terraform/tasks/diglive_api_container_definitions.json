@@ -75,6 +75,10 @@
       {
         "name": "API_URL",
         "valueFrom": "API_URL"
+      },
+      {
+        "name": "IMAGE_URL",
+        "valueFrom": "IMAGE_URL"
       }
     ]
   }
