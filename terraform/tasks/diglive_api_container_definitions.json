@@ -1,7 +1,7 @@
 [
   {
     "name": "diglive-api",
-    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-api:latest",
+    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-api",
     "essential": true,
     "logConfiguration": {
       "logDriver": "awslogs",
@@ -75,10 +75,6 @@
       {
         "name": "API_URL",
         "valueFrom": "API_URL"
-      },
-      {
-        "name": "IMAGE_URL",
-        "valueFrom": "IMAGE_URL"
       }
     ]
   }

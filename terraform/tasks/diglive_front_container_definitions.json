@@ -1,7 +1,7 @@
 [
   {
     "name": "diglive-front",
-    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-front:latest",
+    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-front",
     "essential": true,
     "logConfiguration": {
       "logDriver": "awslogs",
