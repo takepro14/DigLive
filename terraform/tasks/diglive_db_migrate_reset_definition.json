@@ -1,7 +1,7 @@
 [
   {
     "name": "api-container",
-    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-api:latest",
+    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-api",
     "essential": true,
     "logConfiguration": {
       "logDriver": "awslogs",
@@ -13,10 +13,6 @@
     },
     "command": ["bundle", "exec", "rails", "db:migrate:reset"],
     "environment": [
-      {
-        "name": "DISABLE_DATABASE_ENVIRONMENT_CHECK",
-        "value": "1"
-      },
       {
         "name": "RAILS_ENV",
         "value": "production"
@@ -32,6 +28,28 @@
       {
         "name": "PORT",
         "value": "3000"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "DB_NAME",
+        "valueFrom": "DB_NAME"
+      },
+      {
+        "name": "DB_HOSTNAME",
+        "valueFrom": "DB_HOSTNAME"
+      },
+      {
+        "name": "DB_USERNAME",
+        "valueFrom": "DB_USERNAME"
+      },
+      {
+        "name": "DB_PASSWORD",
+        "valueFrom": "DB_PASSWORD"
+      },
+      {
+        "name": "RAILS_MASTER_KEY",
+        "valueFrom": "RAILS_MASTER_KEY"
       }
     ]
   }

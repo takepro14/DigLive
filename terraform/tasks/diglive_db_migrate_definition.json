@@ -1,7 +1,7 @@
 [
   {
     "name": "api-container",
-    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-api:latest",
+    "image": "454636438913.dkr.ecr.ap-northeast-1.amazonaws.com/diglive-api",
     "essential": true,
     "logConfiguration": {
       "logDriver": "awslogs",
