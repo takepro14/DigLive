@@ -35,7 +35,7 @@
 
 ### 検索画面
 
-選択したジャンルで投稿・ユーザを縦断検索します。
+選択したジャンルで投稿・ユーザをそれぞれ検索可能です。
 
 ![検索画面デモ.gif](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/626595/e71f5b1b-1192-af1f-4356-2189ecde8690.gif)
 
