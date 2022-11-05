@@ -54,11 +54,11 @@
 - Dockerでアプリをコンテナ化することで、開発/本番での環境間差異トラブルを低減している
 - Docker-Composeでコンテナ化アプリケーションを効率的に管理している
 - AWS ECS(Fargate)を利用し、Dockerイメージの管理のみに集中できるサーバーレスな運用を実現している
-- AWS Route53/ACM/ALBを用いて、独自ドメイン＋常時SSL通信(HTTPS)を実現している
+- AWS Route53, ACM, ALBを用いて、独自ドメイン＋常時SSL通信(HTTPS)を実現している
 - AWS SSMに本番環境用の環境変数をシークレット保存し、ECSタスク起動時に読み込ませている
 - Terraformを利用し、インフラをコードで管理している
-- CircleCIでCI/CDパイプラインを構築し、Orbと連携することでコードの変更を自動的に本番環境(AWS ECS/ECR)に反映している
-- Rspec、Jestを用いてテスト環境を整備している
+- CircleCIでCI/CDパイプラインを構築し、Orbと連携することでコードの変更を自動的に本番環境(AWS ECS, ECR)に反映している
+- Rspec, Jestを用いてテスト環境を整備している
 - Git, GitHubのブランチ/Issue/PR等を活用し、実務を意識した開発をしている
 
 
